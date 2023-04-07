@@ -22,4 +22,9 @@
     <style name="Theme.ScreenTimeAlarm.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.ScreenTimeAlarm.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="DefaultNumberPickerTheme">
+        <item name="colorControlNormal">@color/transparent</item>
+        <item name="android:background">@drawable/bg_round_corner_bordered_light</item>
+    </style>
 </resources>

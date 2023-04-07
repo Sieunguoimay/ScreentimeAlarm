@@ -2,6 +2,8 @@ package com.sieunguoimay.screentimealarm
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast

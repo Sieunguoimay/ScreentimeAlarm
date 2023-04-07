@@ -15,7 +15,7 @@ class UIController(
             serviceController.tryToggleService()
         }
         binding.numberPicker.minValue = 1
-        binding.numberPicker.maxValue = 180
+        binding.numberPicker.maxValue = 60
         binding.numberPicker.setOnValueChangedListener { _, _, newValue ->
             Log.d("", "setOnValueChangedListener $newValue")
             serviceController.setAlarmTime(newValue)
