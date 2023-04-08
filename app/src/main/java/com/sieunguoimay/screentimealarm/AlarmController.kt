@@ -4,26 +4,31 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
+import com.sieunguoimay.screentimealarm.data.AlarmData
 
-class AlarmController  {
+class AlarmController {
 
-    private var minutes: Int = 1
+    var alarmData: AlarmData? = null
+        private set
+        get
     private var isRunning: Boolean = false
     private var context: Context? = null
     private var alarmFireHandler: AlarmFireHandler? = null
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
 
-    private fun setTime(minute: Int) {
-        minutes = minute
-    }
+    private val minutes: Float
+        get() = alarmData?.alarmConfigData?.getMaxScreenTime() ?: 0f
 
-    fun startAlarmWithTime(minute: Int) {
-        setTime(minute)
-        startAlarm()
+    fun setAlarmData(alarmData: AlarmData?) {
+        this.alarmData = alarmData
     }
 
     fun startAlarm() {
+        if (alarmData == null) {
+            Log.e("", "startAlarm $minutes - alarmData is empty")
+            return
+        }
         if (isRunning) {
             Log.e("", "startAlarm $minutes - alarm already running")
             return
@@ -67,10 +72,12 @@ class AlarmController  {
         Log.d("", "setupAlarm $minutes")
 
         // Schedule the event after the specified time (in milliseconds)
-        val delayMillis = minutes*1000L // 1 minute (you can change this to your desired time)
+        val delayMillis =
+            minutes.toLong() * 1000L // 1 minute (you can change this to your desired time)
         handler.postDelayed(runnable, delayMillis)
     }
-    interface AlarmFireHandler{
-        fun onAlarmFire(sender:AlarmController)
+
+    interface AlarmFireHandler {
+        fun onAlarmFire(sender: AlarmController)
     }
 }

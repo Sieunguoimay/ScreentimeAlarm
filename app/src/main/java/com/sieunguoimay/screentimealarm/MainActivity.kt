@@ -2,8 +2,6 @@ package com.sieunguoimay.screentimealarm
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -15,7 +13,7 @@ import com.sieunguoimay.screentimealarm.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var serviceController: ServiceController
+    private lateinit var serviceController: ForegroundServiceController
     private lateinit var uiController: UIController
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,13 +22,10 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        serviceController = ServiceController(applicationContext, serviceActiveHandler)
+        serviceController = ForegroundServiceController(applicationContext, serviceActiveHandler)
         uiController = UIController(binding, serviceController)
-
         uiController.setupEvents()
-
         serviceController.tryBindingToTheService()
-
         tryRequestPermissions()
 
     }
@@ -78,8 +73,8 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(applicationContext, "onPermissionDenied", Toast.LENGTH_SHORT).show()
     }
 
-    private val serviceActiveHandler = object : ServiceController.ServiceActiveHandler {
-        override fun onServiceActiveChanged(sender: ServiceController) {
+    private val serviceActiveHandler = object : ForegroundServiceController.ServiceActiveHandler {
+        override fun onServiceActiveChanged(sender: ForegroundServiceController) {
             uiController.toggleMainButtonText()
         }
     }

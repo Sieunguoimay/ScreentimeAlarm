@@ -5,17 +5,21 @@ import android.content.Context
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
+import com.sieunguoimay.screentimealarm.data.AlarmData
+import com.sieunguoimay.screentimealarm.data.AlarmDataController
 
-class ServiceController(var context: Context, activeHandler: ServiceActiveHandler) {
+class ForegroundServiceController(val context: Context,val dataController: AlarmDataController) {
     private var backgroundService: ForegroundService? = null
     private var lockButtonFlag: Boolean = false
-    private var activeHandler: ServiceActiveHandler? = activeHandler
+    private var activeHandler: List<ServiceActiveHandler> = emptyList()
     private var isActive: Boolean = false
-    private var minutes: Int = 1
+    private var bindingOnStart:Boolean = false
 
     fun tryBindingToTheService() {
         if (ForegroundService.bindService(context, connection)) {
 //            lockTheButton()
+        } else {
+            setActive(false)
         }
     }
 
@@ -23,11 +27,16 @@ class ServiceController(var context: Context, activeHandler: ServiceActiveHandle
         if (!lockButtonFlag) {
             lockTheButton()
             if (backgroundService == null) {
+                bindingOnStart = true
                 ForegroundService.startService(context, connection)
             } else {
                 ForegroundService.stopService(context, connection)
             }
         }
+    }
+
+    fun addHandler(handler: ServiceActiveHandler) {
+        activeHandler.plus(handler)
     }
 
     private fun lockTheButton() {
@@ -40,22 +49,28 @@ class ServiceController(var context: Context, activeHandler: ServiceActiveHandle
 
     private fun setActive(active: Boolean) {
         isActive = active
-        activeHandler?.onServiceActiveChanged(this@ServiceController)
+        for (l in activeHandler) {
+            l.onServiceActiveChanged(this@ForegroundServiceController)
+        }
     }
 
     fun getActive(): Boolean {
         return isActive
     }
 
-    fun setAlarmTime(minutes: Int) {
-        this.minutes = minutes
+    fun getAlarmData(): AlarmData? {
+        return backgroundService?.alarmController?.alarmData
     }
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             backgroundService = (service as ForegroundService.LocalBinder).getService()
             backgroundService?.serviceDestroyHandler = onServiceDestroyHandler
-            backgroundService?.alarmController?.startAlarmWithTime(minutes)
+
+            if(bindingOnStart){
+                onServiceConnectedFirstTime()
+                bindingOnStart = false
+            }
 
             // Do something with the service reference
             Log.d("", "onServiceConnected")
@@ -64,6 +79,11 @@ class ServiceController(var context: Context, activeHandler: ServiceActiveHandle
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
+        }
+
+        private fun onServiceConnectedFirstTime(){
+            backgroundService?.alarmController?.setAlarmData(dataController.alarmViewData?.alarmData)
+            backgroundService?.alarmController?.startAlarm()
         }
     }
 
@@ -77,6 +97,6 @@ class ServiceController(var context: Context, activeHandler: ServiceActiveHandle
     }
 
     interface ServiceActiveHandler {
-        fun onServiceActiveChanged(sender: ServiceController)
+        fun onServiceActiveChanged(sender: ForegroundServiceController)
     }
 }

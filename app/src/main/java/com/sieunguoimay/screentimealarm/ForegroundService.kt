@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.widget.RemoteViews
+import androidx.annotation.ContentView
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 
@@ -22,9 +23,7 @@ class ForegroundService : Service() {
     var serviceDestroyHandler: ServiceDestroyHandler? = null
     var activeStateHandler: ActiveStateHandler? = null
     val alarmController = AlarmController()
-    private lateinit var notification: Notification
-    private var NOTIFICATION_ID: Int = 20
-
+    private lateinit var notificationController: NotificationController
     override fun onBind(p0: Intent?): IBinder {
         Log.d("", "onBind")
         return LocalBinder()
@@ -33,8 +32,8 @@ class ForegroundService : Service() {
     override fun onCreate() {
         super.onCreate()
         alarmController.setupDependencies(applicationContext, alarmFireHandler)
-        notification = createNotification()
-        startForeground(NOTIFICATION_ID, notification)
+        notificationController = NotificationController(this)
+        notificationController.show()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -59,9 +58,7 @@ class ForegroundService : Service() {
         alarmController.stopAlarm()
         screenStateReceiver.onUnregister(applicationContext)
 
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(NOTIFICATION_ID)
+        notificationController.dismiss()
 
         serviceDestroyHandler?.onServiceDestroy(this)
     }
@@ -94,10 +91,7 @@ class ForegroundService : Service() {
 
     private val alarmFireHandler = object : AlarmController.AlarmFireHandler {
         override fun onAlarmFire(sender: AlarmController) {
-            // Update the existing notification using NotificationManager
-            val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.notify(NOTIFICATION_ID, notification)
+            notificationController.dropDown()
             Log.d("", "onAlarmFire")
         }
     }
@@ -143,56 +137,4 @@ class ForegroundService : Service() {
         fun onActiveChanged(service: ForegroundService)
     }
 
-
-    private fun createNotification(): Notification {
-        val notificationChannelId = "ENDLESS SERVICE CHANNEL"
-
-        // depending on the Android API that we're dealing with we will have
-        // to use a specific method to create the notification
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager;
-            val channel = NotificationChannel(
-                notificationChannelId,
-                "Endless Service notifications channel",
-                NotificationManager.IMPORTANCE_HIGH
-            ).let {
-                it.description = "Endless Service channel"
-                it.enableLights(true)
-                it.lightColor = Color.RED
-                it.enableVibration(true)
-                it.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
-                it
-            }
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val pendingIntent: PendingIntent =
-            Intent(this, MainActivity::class.java).let { notificationIntent ->
-                PendingIntent.getActivity(this, 0, notificationIntent, 0)
-            }
-
-        val builder: NotificationCompat.Builder =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) NotificationCompat.Builder(
-                this,
-                notificationChannelId
-            ) else NotificationCompat.Builder(this)
-        // Create a custom remote views for the notification
-        val contentView = RemoteViews(packageName, R.layout.custom_notification_layout)
-        // Set up the appearance of the notification using the RemoteViews
-        contentView.setTextViewText(R.id.titleTextView, "Title Text")
-
-// Set the notification to appear as a heads-up notification
-        builder.setFullScreenIntent(pendingIntent, true);
-
-        return builder
-//            .setContentTitle("Endless Service")
-//            .setContentText("This is your favorite endless service working")
-            .setContentIntent(pendingIntent)
-            .setSmallIcon(R.mipmap.ic_launcher)
-//            .setTicker("Ticker text")
-            .setCustomContentView(contentView)
-            .setPriority(NotificationCompat.PRIORITY_HIGH) // for under android 26 compatibility
-            .build()
-    }
 }

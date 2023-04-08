@@ -5,7 +5,7 @@ import com.sieunguoimay.screentimealarm.databinding.ActivityMainBinding
 
 class UIController(
     private var binding: ActivityMainBinding,
-    private var serviceController: ServiceController
+    private var serviceController: ForegroundServiceController
 ) {
 
     fun setupEvents() {
@@ -28,10 +28,7 @@ class UIController(
     }
 
     fun toggleMainButtonText() {
-        if (serviceController.getActive()) {
-            binding.mainButton.text = "Stop"
-        } else {
-            binding.mainButton.text = "Start"
-        }
+        var key = if (serviceController.getActive()) R.string.disable else R.string.enable
+        binding.mainButton.text = serviceController.context.getString(key)
     }
 }
