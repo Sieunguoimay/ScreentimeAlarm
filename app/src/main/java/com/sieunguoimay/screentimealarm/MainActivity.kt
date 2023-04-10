@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.sieunguoimay.screentimealarm.data.AlarmDataController
 import com.sieunguoimay.screentimealarm.databinding.ActivityMainBinding
 
 
@@ -15,6 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var serviceController: ForegroundServiceController
     private lateinit var uiController: UIController
+    private lateinit var dataController: AlarmDataController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,12 +24,16 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        serviceController = ForegroundServiceController(applicationContext, serviceActiveHandler)
-        uiController = UIController(binding, serviceController)
+        dataController = AlarmDataController()
+        serviceController = ForegroundServiceController(applicationContext, dataController)
+        uiController = UIController(applicationContext, binding, dataController, serviceController)
         uiController.setupEvents()
-        serviceController.tryBindingToTheService()
         tryRequestPermissions()
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceController.onActivityDestroy()
     }
 
     private fun tryRequestPermissions() {
@@ -66,16 +72,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onPermissionGranted() {
-        uiController.toggleMainButton(true)
+        serviceController.tryBindingToTheService()
     }
 
     private fun onPermissionDenied() {
         Toast.makeText(applicationContext, "onPermissionDenied", Toast.LENGTH_SHORT).show()
-    }
-
-    private val serviceActiveHandler = object : ForegroundServiceController.ServiceActiveHandler {
-        override fun onServiceActiveChanged(sender: ForegroundServiceController) {
-            uiController.toggleMainButtonText()
-        }
     }
 }

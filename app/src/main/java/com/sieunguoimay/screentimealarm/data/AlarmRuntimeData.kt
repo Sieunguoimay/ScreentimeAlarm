@@ -1,9 +1,15 @@
 package com.sieunguoimay.screentimealarm.data
 
-class AlarmRuntimeData() {
-    private var alarmActiveStatus: Boolean = false
-    private var foregroundServiceActiveStatus: Boolean = false
-    private val changeHandler: List<AlarmRuntimeDataChangeHandler> = emptyList()
+import android.util.Log
+
+class AlarmRuntimeData {
+    var alarmActiveStatus: Boolean = false
+        private set
+    var foregroundServiceActiveStatus: Boolean = false
+        private set
+
+    val changeHandler: ArrayList<AlarmRuntimeDataChangeHandler> = ArrayList()
+
     private fun invokeOnChange() {
         for (h in changeHandler) {
             h.onChange(this)
@@ -11,21 +17,14 @@ class AlarmRuntimeData() {
     }
 
     fun setAlarmActiveStatus(active: Boolean) {
+        Log.d("","setAlarmActiveStatus")
         alarmActiveStatus = active
         invokeOnChange()
-    }
-
-    fun getAlarmActiveStatus(): Boolean {
-        return alarmActiveStatus
     }
 
     fun setForegroundServiceActiveStatus(active: Boolean) {
         foregroundServiceActiveStatus = active
         invokeOnChange()
-    }
-
-    fun getForegroundServiceActiveStatus(): Boolean {
-        return foregroundServiceActiveStatus
     }
 }
 

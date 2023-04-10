@@ -1,34 +1,27 @@
 package com.sieunguoimay.screentimealarm.data
 
-import com.sieunguoimay.screentimealarm.ForegroundServiceController
+import android.util.Log
 
-class AlarmDataController(private val foregroundServiceController: ForegroundServiceController) {
-    private val alarmDataHandlers: List<AlarmDataHandler> = emptyList()
+class AlarmDataController {
+    private val alarmDataHandlers: ArrayList<AlarmDataHandler> = ArrayList()
     var alarmViewData: ViewData? = null
         private set
 
-    fun setup() {
-        foregroundServiceController.addHandler(serviceActiveHandler)
+    fun setAlarmData(alarmData: AlarmData){
+        Log.d("","setAlarmData ${alarmDataHandlers.count()}")
+        alarmViewData = ViewData(alarmData)
+        invokeOnDataReady()
     }
+
+    fun loadDataFromPersistent():AlarmData{
+        val alarmConfigData = AlarmConfigData()
+        alarmConfigData.setMaxScreenTime(10)
+        return AlarmData(alarmConfigData, alarmRuntimeData = AlarmRuntimeData())
+     }
 
     fun addHandler(handler: AlarmDataHandler) {
-        alarmDataHandlers.plus(handler)
-    }
-
-    private val serviceActiveHandler = object : ForegroundServiceController.ServiceActiveHandler {
-        override fun onServiceActiveChanged(sender: ForegroundServiceController) {
-            if (sender.getActive()) {
-
-                var data = sender.getAlarmData()
-                if (data != null) {
-                    alarmViewData = ViewData(data)
-                    invokeOnDataReady()
-                }
-            } else {
-                    alarmViewData = ViewData(AlarmData(AlarmConfigData(),AlarmRuntimeData()))
-                    invokeOnDataReady()
-            }
-        }
+        alarmDataHandlers.add(handler)
+        Log.d("","addHandler ${alarmDataHandlers.count()}")
     }
 
     private fun invokeOnDataReady() {

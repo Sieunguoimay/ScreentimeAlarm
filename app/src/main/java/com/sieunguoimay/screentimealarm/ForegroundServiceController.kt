@@ -5,22 +5,27 @@ import android.content.Context
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-import com.sieunguoimay.screentimealarm.data.AlarmData
 import com.sieunguoimay.screentimealarm.data.AlarmDataController
 
-class ForegroundServiceController(val context: Context,val dataController: AlarmDataController) {
+class ForegroundServiceController(
+    private val context: Context,
+    private val dataController: AlarmDataController
+) {
     private var backgroundService: ForegroundService? = null
     private var lockButtonFlag: Boolean = false
-    private var activeHandler: List<ServiceActiveHandler> = emptyList()
+    private var activeHandler: ArrayList<ServiceActiveHandler> = ArrayList()
     private var isActive: Boolean = false
-    private var bindingOnStart:Boolean = false
+        get
+    private var bindingOnStart: Boolean = false
 
     fun tryBindingToTheService() {
-        if (ForegroundService.bindService(context, connection)) {
-//            lockTheButton()
-        } else {
-            setActive(false)
-        }
+        setConnectionStatus(ConnectionStatus.NotConnectedOnStart)
+        ForegroundService.bindService(context, connection)
+        Log.d("", "tryBindingToTheService")
+    }
+
+    fun onActivityDestroy() {
+
     }
 
     fun tryToggleService() {
@@ -36,7 +41,7 @@ class ForegroundServiceController(val context: Context,val dataController: Alarm
     }
 
     fun addHandler(handler: ServiceActiveHandler) {
-        activeHandler.plus(handler)
+        activeHandler.add(handler)
     }
 
     private fun lockTheButton() {
@@ -47,43 +52,55 @@ class ForegroundServiceController(val context: Context,val dataController: Alarm
         lockButtonFlag = false
     }
 
-    private fun setActive(active: Boolean) {
-        isActive = active
+    private fun setConnectionStatus(connectionStatus: ConnectionStatus) {
+        Log.d("", "$connectionStatus")
+        isActive =
+            connectionStatus == ConnectionStatus.ConnectedSecondTimeOn || connectionStatus == ConnectionStatus.ConnectedFirstTime
+
+        if (connectionStatus == ConnectionStatus.ConnectedFirstTime) {
+            val dataFromActivity = dataController.alarmViewData?.alarmData
+            if (dataFromActivity != null) {
+                backgroundService?.alarmController?.setAlarmData(dataFromActivity)
+                backgroundService?.alarmController?.startAlarm()
+            }
+        } else if (connectionStatus == ConnectionStatus.ConnectedSecondTimeOn) {
+            val dataFromService = backgroundService?.alarmController?.alarmData
+            if (dataFromService != null) {
+                dataController.setAlarmData(dataFromService)
+            }
+        } else if (connectionStatus == ConnectionStatus.NotConnectedOnStart) {
+            val dataFromPersistent = dataController.loadDataFromPersistent()
+            dataController.setAlarmData(dataFromPersistent)
+        } else if (connectionStatus == ConnectionStatus.Disconnected) {
+
+        }
+
+        dataController.alarmViewData?.alarmData?.alarmRuntimeData?.setAlarmActiveStatus(isActive)
+
         for (l in activeHandler) {
-            l.onServiceActiveChanged(this@ForegroundServiceController)
+            l.onConnectionStatusChanged(this@ForegroundServiceController)
         }
     }
 
-    fun getActive(): Boolean {
-        return isActive
-    }
-
-    fun getAlarmData(): AlarmData? {
-        return backgroundService?.alarmController?.alarmData
-    }
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             backgroundService = (service as ForegroundService.LocalBinder).getService()
             backgroundService?.serviceDestroyHandler = onServiceDestroyHandler
 
-            if(bindingOnStart){
-                onServiceConnectedFirstTime()
+            if (bindingOnStart) {
+                setConnectionStatus(ConnectionStatus.ConnectedFirstTime)
                 bindingOnStart = false
+            } else {
+                setConnectionStatus(ConnectionStatus.ConnectedSecondTimeOn)
             }
 
             // Do something with the service reference
             Log.d("", "onServiceConnected")
             unlockTheButton()
-            setActive(true)
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-        }
-
-        private fun onServiceConnectedFirstTime(){
-            backgroundService?.alarmController?.setAlarmData(dataController.alarmViewData?.alarmData)
-            backgroundService?.alarmController?.startAlarm()
         }
     }
 
@@ -92,11 +109,18 @@ class ForegroundServiceController(val context: Context,val dataController: Alarm
             backgroundService = null
             unlockTheButton()
             Log.d("", "onServiceDestroy")
-            setActive(false)
+            setConnectionStatus(ConnectionStatus.Disconnected)
         }
     }
 
     interface ServiceActiveHandler {
-        fun onServiceActiveChanged(sender: ForegroundServiceController)
+        fun onConnectionStatusChanged(sender: ForegroundServiceController)
+    }
+
+    enum class ConnectionStatus {
+        ConnectedFirstTime,
+        ConnectedSecondTimeOn,
+        NotConnectedOnStart,
+        Disconnected
     }
 }

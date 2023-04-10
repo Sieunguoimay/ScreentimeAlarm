@@ -78,14 +78,15 @@ class NotificationController(private var service: Service) {
     }
 
     private fun createNotificationView(): RemoteViews {
-        var contentView = RemoteViews(service.packageName, R.layout.custom_notification_layout)
+        val contentView = RemoteViews(service.packageName, R.layout.custom_notification_layout)
         contentView.setTextViewText(R.id.titleTextView, "Title Text")
         return contentView
     }
 
     private fun createPendingIntent(): PendingIntent {
         return Intent(service, MainActivity::class.java).let { notificationIntent ->
-            PendingIntent.getActivity(service, 0, notificationIntent, 0)
+            PendingIntent.getActivity(service, 0, notificationIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         }
     }
 }

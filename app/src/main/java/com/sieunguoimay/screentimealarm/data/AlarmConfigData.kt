@@ -1,13 +1,26 @@
 package com.sieunguoimay.screentimealarm.data
 
+import android.util.Log
+
 class AlarmConfigData {
 
-    private var maxScreenTime: Float = 0f
-    private var playSoundOnAlarm: Boolean = false
-    private var vibrateOnAlarm: Boolean = false
-    private var useCustomMessageOnAlarm: Boolean = false
-    private var customMessage: String = ""
-    private val changeHandler: List<AlarmConfigDataChangeHandler> = emptyList()
+    var maxScreenTime: Int = 0
+        private set
+        get
+    var playSoundOnAlarm: Boolean = false
+        private set
+        get
+    var vibrateOnAlarm: Boolean = false
+        private set
+        get
+    var useCustomMessageOnAlarm: Boolean = false
+        private set
+        get
+    val changeHandler: ArrayList<AlarmConfigDataChangeHandler> = ArrayList()
+        get
+    var customMessage: String = ""
+        private set
+        get
 
     private fun invokeOnChanged() {
         for (h in changeHandler) {
@@ -15,13 +28,10 @@ class AlarmConfigData {
         }
     }
 
-    fun setMaxScreenTime(time: Float) {
+    fun setMaxScreenTime(time: Int) {
+        Log.d("","setMaxScreenTime $time")
         maxScreenTime = time
         invokeOnChanged()
-    }
-
-    fun getMaxScreenTime(): Float {
-        return maxScreenTime
     }
 
     fun setPlaySoundOnAlarm(active: Boolean) {
@@ -29,17 +39,10 @@ class AlarmConfigData {
         invokeOnChanged()
     }
 
-    fun getPlaySoundOnAlarm(): Boolean {
-        return playSoundOnAlarm;
-    }
 
     fun setVibration(active: Boolean) {
         vibrateOnAlarm = active
         invokeOnChanged()
-    }
-
-    fun getVibration(): Boolean {
-        return vibrateOnAlarm
     }
 
     fun setUseCustomMessageOnAlarm(active: Boolean) {
@@ -47,17 +50,9 @@ class AlarmConfigData {
         invokeOnChanged()
     }
 
-    fun getUseCustomMessageOnAlarm(): Boolean {
-        return useCustomMessageOnAlarm
-    }
-
     fun setCustomMessage(message: String) {
         customMessage = message;
         invokeOnChanged()
-    }
-
-    fun getCustomMessage(): String {
-        return customMessage
     }
 }
 
