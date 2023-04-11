@@ -5,12 +5,12 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
 import com.sieunguoimay.screentimealarm.data.AlarmData
+import java.util.*
 
 class AlarmController {
 
     var alarmData: AlarmData? = null
         private set
-        get
     private var isRunning: Boolean = false
     private var context: Context? = null
     private var alarmFireHandler: AlarmFireHandler? = null
@@ -35,7 +35,7 @@ class AlarmController {
         }
         Log.d("", "startAlarm $minutes")
         isRunning = true
-        setupAlarm()
+        updateAlarmFireTime()
     }
 
     fun stopAlarm() {
@@ -58,10 +58,9 @@ class AlarmController {
             Log.d("", "firing alarm")
             this.alarmFireHandler?.onAlarmFire(this)
         }
-
     }
 
-    private fun setupAlarm() {
+    private fun updateAlarmFireTime() {
 //        val alarmTime = Calendar.getInstance()
 //        alarmTime.set(Calendar.HOUR_OF_DAY, 8) // Set the hour of the alarm
 //        alarmTime.set(Calendar.MINUTE, 30) // Set the minute of the alarm
@@ -72,9 +71,13 @@ class AlarmController {
         Log.d("", "setupAlarm $minutes")
 
         // Schedule the event after the specified time (in milliseconds)
-        val delayMillis =
-            minutes.toLong() * 1000L // 1 minute (you can change this to your desired time)
+        val delayMillis = minutes.toLong() * 1000L
+        // 1 minute (you can change this to your desired time)
         handler.postDelayed(runnable, delayMillis)
+
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.MINUTE,minutes)
+        alarmData?.alarmRuntimeData?.setAlarmFireTime(calendar.timeInMillis)
     }
 
     interface AlarmFireHandler {

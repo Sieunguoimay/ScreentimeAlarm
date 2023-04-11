@@ -14,8 +14,8 @@ class ForegroundServiceController(
     private var backgroundService: ForegroundService? = null
     private var lockButtonFlag: Boolean = false
     private var activeHandler: ArrayList<ServiceActiveHandler> = ArrayList()
-    private var isActive: Boolean = false
-        get
+    var isActive: Boolean = false
+        private set
     private var bindingOnStart: Boolean = false
 
     fun tryBindingToTheService() {

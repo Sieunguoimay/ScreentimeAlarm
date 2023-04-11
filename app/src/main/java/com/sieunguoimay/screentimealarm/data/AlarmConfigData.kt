@@ -6,21 +6,15 @@ class AlarmConfigData {
 
     var maxScreenTime: Int = 0
         private set
-        get
     var playSoundOnAlarm: Boolean = false
         private set
-        get
     var vibrateOnAlarm: Boolean = false
         private set
-        get
     var useCustomMessageOnAlarm: Boolean = false
         private set
-        get
     val changeHandler: ArrayList<AlarmConfigDataChangeHandler> = ArrayList()
-        get
     var customMessage: String = ""
         private set
-        get
 
     private fun invokeOnChanged() {
         for (h in changeHandler) {

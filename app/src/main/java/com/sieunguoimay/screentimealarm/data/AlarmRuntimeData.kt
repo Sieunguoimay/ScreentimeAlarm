@@ -7,6 +7,8 @@ class AlarmRuntimeData {
         private set
     var foregroundServiceActiveStatus: Boolean = false
         private set
+    var alarmFireTime:Long = 0
+        private set
 
     val changeHandler: ArrayList<AlarmRuntimeDataChangeHandler> = ArrayList()
 
@@ -24,6 +26,11 @@ class AlarmRuntimeData {
 
     fun setForegroundServiceActiveStatus(active: Boolean) {
         foregroundServiceActiveStatus = active
+        invokeOnChange()
+    }
+
+    fun setAlarmFireTime(time:Long){
+        alarmFireTime = time
         invokeOnChange()
     }
 }

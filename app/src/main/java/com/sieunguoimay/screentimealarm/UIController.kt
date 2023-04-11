@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.sieunguoimay.screentimealarm.data.*
 import com.sieunguoimay.screentimealarm.databinding.ActivityMainBinding
+import java.util.*
 
 class UIController(
     private val context: Context,
@@ -11,6 +12,7 @@ class UIController(
     private val dataController: AlarmDataController,
     private val serviceController: ForegroundServiceController
 ) {
+    private val timer = Timer()
 
     fun setupEvents() {
         Log.d("", "UIController.setupEvents")
@@ -26,6 +28,7 @@ class UIController(
             dataController.alarmViewData?.alarmData?.alarmConfigData?.setMaxScreenTime(newValue)
         }
         dataController.addHandler(dataHandler)
+        serviceController.addHandler(serviceActiveHandler)
     }
 
     private val dataHandler = object : AlarmDataHandler {
@@ -33,6 +36,14 @@ class UIController(
             Log.d("", "onDataReady")
             setupViewData()
             syncViewWithData()
+        }
+    }
+    private val serviceActiveHandler = object : ForegroundServiceController.ServiceActiveHandler {
+        override fun onConnectionStatusChanged(sender: ForegroundServiceController) {
+            if(serviceController.isActive){
+                runTimerTask()
+            }else{
+            }
         }
     }
 
@@ -49,6 +60,20 @@ class UIController(
         }
     }
 
+    private fun runTimerTask() {
+        val interval = 500 // interval in milliseconds
+
+        timer.scheduleAtFixedRate(object : TimerTask() {
+            override fun run() {
+                // This code will run every 0.5 seconds
+                updateTextCoolDownTime()
+            }
+        }, 0, interval.toLong())
+    }
+    private fun stopTimerTask(){
+        timer.cancel()
+    }
+
     private fun syncViewWithData() {
         toggleMainButtonText()
         updateNumberPicker()
@@ -60,8 +85,14 @@ class UIController(
             if (dataController.alarmViewData?.alarmData?.alarmRuntimeData?.alarmActiveStatus == true) R.string.disable else R.string.enable
         binding.mainButton.text = context.getString(key)
     }
-    private fun updateNumberPicker(){
+
+    private fun updateNumberPicker() {
         binding.numberPicker.value =
             dataController.alarmViewData?.alarmData?.alarmConfigData?.maxScreenTime ?: 1
+    }
+
+    private fun updateTextCoolDownTime() {
+        val remaining = dataController.alarmViewData?.remainingTimeFormatted
+        binding.textCoolDownTime.text = remaining
     }
 }
