@@ -18,32 +18,63 @@
         app:layout_constraintVertical_bias="0.2"
         tools:ignore="MissingConstraints" />
 
-    <TextView
-        android:id="@+id/text_cool_down_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        app:layout_constraintBottom_toTopOf="@+id/main_button"
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/number_picker" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_cool_down_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:text="@string/app_name" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:progress="25"
+                android:progressTint="@color/green"/>
+        </LinearLayout>
+
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/main_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginBottom="228dp"
+        android:backgroundTint="@color/button_color"
         android:padding="10dp"
         android:text="@string/enable"
-        android:textSize="20sp"
         android:textColor="@color/text_color"
-        android:backgroundTint="@color/button_color"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

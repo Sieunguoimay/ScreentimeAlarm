@@ -5,25 +5,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
-import android.graphics.Color
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import android.widget.RemoteViews
-import androidx.annotation.ContentView
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 
 class ForegroundService : Service() {
 
-    private val screenStateReceiver = ScreenStateReceiver()
     private var isActive = false
+    private val screenStateReceiver = ScreenStateReceiver()
+    private lateinit var notificationController: NotificationController
 
     var serviceDestroyHandler: ServiceDestroyHandler? = null
-    var activeStateHandler: ActiveStateHandler? = null
     val alarmController = AlarmController()
-    private lateinit var notificationController: NotificationController
     override fun onBind(p0: Intent?): IBinder {
         Log.d("", "onBind")
         return LocalBinder()
@@ -31,18 +26,17 @@ class ForegroundService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        alarmController.setupDependencies(applicationContext, alarmFireHandler)
+        alarmController.setup()
+        alarmController.alarmFireHandlers.add(alarmFireHandler)
         notificationController = NotificationController(this)
         notificationController.show()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        Log.d("", "onStartCommand")
-
         // Check if the service is active
         if (!isActive) {
-            setActive(true)
+            isActive = true
             startBackgroundTask()
         }
 
@@ -51,29 +45,16 @@ class ForegroundService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("", "onDestroy")
-        // Inactivate the service
-        setActive(false)
+        isActive = false
         unregisterReceiver(screenStateReceiver)
-        alarmController.stopAlarm()
+        alarmController.alarmFireHandlers.remove(alarmFireHandler)
+        alarmController.cleanup()
         screenStateReceiver.onUnregister(applicationContext)
-
         notificationController.dismiss()
-
         serviceDestroyHandler?.onServiceDestroy(this)
     }
 
-    fun getActive(): Boolean {
-        return isActive
-    }
-
-    private fun setActive(active: Boolean) {
-        isActive = active
-        activeStateHandler?.onActiveChanged(this)
-    }
-
     private fun startBackgroundTask() {
-        // Add your background task logic here
         // Register the BroadcastReceiver to receive the screen state intents
         val intentFilter = IntentFilter().apply {
             addAction(Intent.ACTION_SCREEN_ON)
@@ -132,9 +113,4 @@ class ForegroundService : Service() {
     interface ServiceDestroyHandler {
         fun onServiceDestroy(service: ForegroundService)
     }
-
-    interface ActiveStateHandler {
-        fun onActiveChanged(service: ForegroundService)
-    }
-
 }

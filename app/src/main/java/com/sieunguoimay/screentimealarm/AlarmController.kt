@@ -1,19 +1,18 @@
 package com.sieunguoimay.screentimealarm
 
-import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
 import com.sieunguoimay.screentimealarm.data.AlarmData
 import java.util.*
 
-class AlarmController {
+class AlarmController() {
 
     var alarmData: AlarmData? = null
         private set
     private var isRunning: Boolean = false
-    private var context: Context? = null
-    private var alarmFireHandler: AlarmFireHandler? = null
+    val alarmFireHandlers: ArrayList<AlarmFireHandler> = ArrayList()
+
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
 
@@ -41,29 +40,30 @@ class AlarmController {
     fun stopAlarm() {
         Log.d("", "stopAlarm")
         isRunning = false
-        // Remove the callback from the handler when the service is destroyed
         handler.removeCallbacks(runnable)
     }
 
-    fun setupDependencies(context: Context, alarmFireHandler: AlarmFireHandler) {
-        this.context = context
-        this.alarmFireHandler = alarmFireHandler
-        // Initialize the handler and runnable on a separate thread
+    fun setup() {
         val handlerThread = HandlerThread("MyForegroundServiceHandlerThread")
         handlerThread.start()
         handler = Handler(handlerThread.looper)
         runnable = Runnable {
-            // Your logic to handle the scheduled event
-            // This will be executed after the specified time
             Log.d("", "firing alarm")
-            this.alarmFireHandler?.onAlarmFire(this)
+            invokeHandler()
+        }
+    }
+    fun cleanup(){
+        stopAlarm()
+    }
+
+    private fun invokeHandler() {
+
+        for (h in alarmFireHandlers) {
+            h.onAlarmFire(this)
         }
     }
 
     private fun updateAlarmFireTime() {
-//        val alarmTime = Calendar.getInstance()
-//        alarmTime.set(Calendar.HOUR_OF_DAY, 8) // Set the hour of the alarm
-//        alarmTime.set(Calendar.MINUTE, 30) // Set the minute of the alarm
         if (minutes <= 0) {
             Log.e("", "Setup alarm with invalid time $minutes")
             return
@@ -72,12 +72,9 @@ class AlarmController {
 
         // Schedule the event after the specified time (in milliseconds)
         val delayMillis = minutes.toLong() * 1000L
-        // 1 minute (you can change this to your desired time)
         handler.postDelayed(runnable, delayMillis)
 
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.MINUTE,minutes)
-        alarmData?.alarmRuntimeData?.setAlarmFireTime(calendar.timeInMillis)
+        alarmData?.alarmRuntimeData?.setAlarmFireTime(System.currentTimeMillis() + delayMillis)
     }
 
     interface AlarmFireHandler {

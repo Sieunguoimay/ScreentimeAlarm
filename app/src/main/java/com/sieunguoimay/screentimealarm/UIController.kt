@@ -12,7 +12,7 @@ class UIController(
     private val dataController: AlarmDataController,
     private val serviceController: ForegroundServiceController
 ) {
-    private val timer = Timer()
+    private var timer:Timer = Timer()
 
     fun setupEvents() {
         Log.d("", "UIController.setupEvents")
@@ -43,6 +43,7 @@ class UIController(
             if(serviceController.isActive){
                 runTimerTask()
             }else{
+                stopTimerTask()
             }
         }
     }
@@ -62,7 +63,7 @@ class UIController(
 
     private fun runTimerTask() {
         val interval = 500 // interval in milliseconds
-
+        timer = Timer()
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 // This code will run every 0.5 seconds
