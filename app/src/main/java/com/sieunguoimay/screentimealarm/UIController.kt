@@ -1,18 +1,19 @@
 package com.sieunguoimay.screentimealarm
 
-import android.content.Context
+import android.app.Activity
 import android.util.Log
+import android.view.View
 import com.sieunguoimay.screentimealarm.data.*
 import com.sieunguoimay.screentimealarm.databinding.ActivityMainBinding
 import java.util.*
 
 class UIController(
-    private val context: Context,
+    private val context: Activity,
     private var binding: ActivityMainBinding,
     private val dataController: AlarmDataController,
     private val serviceController: ForegroundServiceController
 ) {
-    private var timer:Timer = Timer()
+    private var timer: Timer = Timer()
 
     fun setupEvents() {
         Log.d("", "UIController.setupEvents")
@@ -38,15 +39,7 @@ class UIController(
             syncViewWithData()
         }
     }
-    private val serviceActiveHandler = object : ForegroundServiceController.ServiceActiveHandler {
-        override fun onConnectionStatusChanged(sender: ForegroundServiceController) {
-            if(serviceController.isActive){
-                runTimerTask()
-            }else{
-                stopTimerTask()
-            }
-        }
-    }
+
 
     private fun setupViewData() {
         dataController.alarmViewData?.alarmData?.alarmRuntimeData?.changeHandler?.add(
@@ -60,6 +53,15 @@ class UIController(
             Log.d("", "runtimeDataHandler.onChange")
         }
     }
+    private val serviceActiveHandler = object : ForegroundServiceController.ServiceActiveHandler {
+        override fun onConnectionStatusChanged(sender: ForegroundServiceController) {
+            if (serviceController.isActive) {
+                runTimerTask()
+            } else {
+                stopTimerTask()
+            }
+        }
+    }
 
     private fun runTimerTask() {
         val interval = 500 // interval in milliseconds
@@ -67,33 +69,55 @@ class UIController(
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 // This code will run every 0.5 seconds
-                updateTextCoolDownTime()
+                context.runOnUiThread {
+                    updateTextCoolDownTime()
+                }
+
             }
         }, 0, interval.toLong())
     }
-    private fun stopTimerTask(){
+
+    private fun stopTimerTask() {
         timer.cancel()
     }
 
     private fun syncViewWithData() {
-        toggleMainButtonText()
+        toggleUIWithServiceActiveness()
         updateNumberPicker()
+        updateTimeDisplayTexts()
     }
 
-    private fun toggleMainButtonText() {
+    private fun toggleUIWithServiceActiveness() {
         Log.d("", "toggleMainButtonText")
-        val key =
-            if (dataController.alarmViewData?.alarmData?.alarmRuntimeData?.alarmActiveStatus == true) R.string.disable else R.string.enable
+        val serviceActive =
+            dataController.alarmViewData?.alarmData?.alarmRuntimeData?.alarmActiveStatus == true
+        val key = if (serviceActive) R.string.disable else R.string.enable
         binding.mainButton.text = context.getString(key)
+        binding.layoutScreenTimeProgress.visibility = if (serviceActive) View.VISIBLE else View.GONE
     }
 
     private fun updateNumberPicker() {
         binding.numberPicker.value =
-            dataController.alarmViewData?.alarmData?.alarmConfigData?.maxScreenTime ?: 1
+            dataController.alarmViewData?.alarmData?.alarmConfigData?.maxScreenTimeMinutes ?: 1
+    }
+
+    private fun updateTimeDisplayTexts() {
+        val max =
+            dataController.alarmViewData?.alarmData?.alarmConfigData?.maxScreenTimeMilliSeconds
+        if (max != null) {
+            binding.textMaxScreenTime.text = ViewData.formatTime(max)
+            binding.textCoolDownTime.text = ViewData.formatTime(max)
+        }
     }
 
     private fun updateTextCoolDownTime() {
-        val remaining = dataController.alarmViewData?.remainingTimeFormatted
-        binding.textCoolDownTime.text = remaining
+        val remaining = dataController.alarmViewData?.remainingMilliSeconds ?: 1
+        val remainingText = dataController.alarmViewData?.progressedTimeFormatted
+        val total =
+            dataController.alarmViewData?.alarmData?.alarmConfigData?.maxScreenTimeMilliSeconds ?: 1
+        val progress = 1f - remaining / total
+        binding.textCoolDownTime.text = remainingText
+        binding.progressBar.progress = (progress * 100f).toInt()
+        Log.d("","$progress")
     }
 }

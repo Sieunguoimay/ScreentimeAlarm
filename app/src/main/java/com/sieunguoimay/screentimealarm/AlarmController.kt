@@ -17,7 +17,7 @@ class AlarmController() {
     private lateinit var runnable: Runnable
 
     private val minutes: Int
-        get() = alarmData?.alarmConfigData?.maxScreenTime ?: 0
+        get() = alarmData?.alarmConfigData?.maxScreenTimeMinutes ?: 0
 
     fun setAlarmData(alarmData: AlarmData?) {
         this.alarmData = alarmData

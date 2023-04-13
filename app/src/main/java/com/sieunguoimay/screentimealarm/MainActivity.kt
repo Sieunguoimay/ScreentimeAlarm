@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         dataController = AlarmDataController()
         serviceController = ForegroundServiceController(applicationContext, dataController)
-        uiController = UIController(applicationContext, binding, dataController, serviceController)
+        uiController = UIController(this, binding, dataController, serviceController)
         uiController.setupEvents()
         tryRequestPermissions()
     }

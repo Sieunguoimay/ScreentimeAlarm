@@ -4,7 +4,10 @@ import android.util.Log
 
 class AlarmConfigData {
 
-    var maxScreenTime: Int = 0
+    val maxScreenTimeMilliSeconds: Long
+        get() = maxScreenTimeMinutes * 1000L
+
+    var maxScreenTimeMinutes: Int = 0
         private set
     var playSoundOnAlarm: Boolean = false
         private set
@@ -23,8 +26,8 @@ class AlarmConfigData {
     }
 
     fun setMaxScreenTime(time: Int) {
-        Log.d("","setMaxScreenTime $time")
-        maxScreenTime = time
+        Log.d("", "setMaxScreenTime $time")
+        maxScreenTimeMinutes = time
         invokeOnChanged()
     }
 

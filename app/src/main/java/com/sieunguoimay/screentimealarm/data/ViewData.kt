@@ -14,17 +14,21 @@ class ViewData(
 ) {
     val remainingSeconds: Long
         get() = (remainingMilliSeconds) / 1000L
-    private val remainingMilliSeconds: Long
+    val remainingMilliSeconds: Long
         get() = max(alarmData.alarmRuntimeData.alarmFireTime - System.currentTimeMillis(), 0L)
     val remainingTimeFormatted: String
         get() = formatTime(remainingMilliSeconds)
+    val progressedTimeFormatted: String
+        get() = formatTime(alarmData.alarmConfigData.maxScreenTimeMilliSeconds - remainingMilliSeconds)
 
-    private fun formatTime(milliSeconds: Long): String {
-        val hours = TimeUnit.MILLISECONDS.toHours(milliSeconds)
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(milliSeconds) % 60
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(milliSeconds) % 60
+    companion object {
+        fun formatTime(milliSeconds: Long): String {
+            val hours = TimeUnit.MILLISECONDS.toHours(milliSeconds)
+            val minutes = TimeUnit.MILLISECONDS.toMinutes(milliSeconds) % 60
+            val seconds = TimeUnit.MILLISECONDS.toSeconds(milliSeconds) % 60
 
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        }
     }
 }
 

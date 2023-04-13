@@ -9,7 +9,10 @@
     <color name="black_transparent_50">#99000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#FF00FF00</color>
-    <color name="text_color">#c0925c</color>
+    <color name="text_color_brown">#c0925c</color>
+    <color name="icon_color_brown">#CEA26E</color>
     <color name="button_color">#f1ece4</color>
+    <color name="button_color_black">#000000</color>
     <color name="transparent">#00000000</color>
+    <color name="progress">#cae4a9</color>
 </resources>
