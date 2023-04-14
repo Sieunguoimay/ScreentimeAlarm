@@ -7,4 +7,6 @@
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="time_placeholder">3m20s</string>
+    <string name="max_screen_time">Maximum screen time</string>
+    <string name="alarm_status">Alarm status</string>
 </resources>

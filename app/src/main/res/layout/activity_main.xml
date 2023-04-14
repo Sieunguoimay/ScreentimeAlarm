@@ -6,7 +6,60 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25"
+        android:baselineAligned="false">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2">
+
+            <TextView
+                android:id="@+id/text_line_1_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/max_screen_time" />
+            <TextView
+                android:id="@+id/text_line_2_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/alarm_status"
+                android:layout_below="@+id/text_line_1_label"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/text_line_1_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/disable" />
+            <TextView
+                android:id="@+id/text_line_2_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/disable"
+                android:layout_below="@+id/text_line_1_value"
+                />
+
+        </RelativeLayout>
+    </LinearLayout>
+
     <NumberPicker
+        android:visibility="gone"
         android:id="@+id/number_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,6 +81,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4"
         tools:ignore="RtlSymmetry">
 
         <android.widget.ImageButton
@@ -103,14 +157,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="136dp"
-        android:padding="10dp"
         android:text="@string/enable"
         android:textColor="@color/text_color_brown"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.6"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

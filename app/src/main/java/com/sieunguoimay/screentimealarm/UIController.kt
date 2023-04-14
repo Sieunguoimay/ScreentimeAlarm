@@ -105,19 +105,21 @@ class UIController(
         val max =
             dataController.alarmViewData?.alarmData?.alarmConfigData?.maxScreenTimeMilliSeconds
         if (max != null) {
-            binding.textMaxScreenTime.text = ViewData.formatTime(max)
-            binding.textCoolDownTime.text = ViewData.formatTime(max)
+            val t = ViewData.formatTime(max)
+            binding.textMaxScreenTime.text = t
+            binding.textCoolDownTime.text = t
         }
     }
 
     private fun updateTextCoolDownTime() {
+
+        val remainingText = dataController.alarmViewData?.getProgressedTimeFormatted()
+        binding.textCoolDownTime.text = remainingText
+
         val remaining = dataController.alarmViewData?.remainingMilliSeconds ?: 1
-        val remainingText = dataController.alarmViewData?.progressedTimeFormatted
         val total =
             dataController.alarmViewData?.alarmData?.alarmConfigData?.maxScreenTimeMilliSeconds ?: 1
-        val progress = 1f - remaining / total
-        binding.textCoolDownTime.text = remainingText
+        val progress = 1f - remaining.toFloat() / total.toFloat()
         binding.progressBar.progress = (progress * 100f).toInt()
-        Log.d("","$progress")
     }
 }
