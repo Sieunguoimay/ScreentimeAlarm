@@ -1,5 +1,6 @@
 package com.sieunguoimay.screentimealarm.data
 
+import com.sieunguoimay.screentimealarm.AlarmController
 import java.lang.Long.max
 import java.text.SimpleDateFormat
 import java.util.*
@@ -24,6 +25,7 @@ class ViewData(
             alarmData.alarmConfigData.maxScreenTimeMilliSeconds - remainingMilliSeconds
         return formatTime(milliSeconds)
     }
+    var alarmController:AlarmController?=null
 
     companion object {
         fun formatTime(milliseconds: Long): String {

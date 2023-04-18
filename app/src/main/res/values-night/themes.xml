@@ -14,7 +14,6 @@
         <!-- Customize your theme here. -->
         <item name="android:textColor">#ffffffff</item>
         <item name="android:buttonStyle">@style/ButtonStyle</item>
-        <item name="android:imageButtonStyle">@style/ImageButtonStyle</item>
     </style>
     <style name="DefaultNumberPickerTheme">
         <item name="colorControlNormal">@color/transparent</item>
@@ -23,8 +22,14 @@
     <style name="ButtonStyle" parent="Widget.AppCompat.Button.Colored">
         <item name="android:background">@drawable/bg_button_black</item>
     </style>
-    <style name="ImageButtonStyle" parent="Widget.AppCompat.ImageButton">
-        <item name="android:background">@drawable/bg_button_black</item>
+    <style name="NotificationButtonStyle">
+        <item name="android:background">@drawable/bg_button_notification_black</item>
+    </style>
+    <style name="NotificationTextStyle">
+        <item name="android:textColor">@color/text_notification_color_white</item>
+    </style>
+    <style name="NotificationImageStyle">
+        <item name="android:tint">@color/button_notification_color_white</item>
     </style>
     <style name="ImageViewStyle">
         <item name="tint">@color/icon_color_brown</item>

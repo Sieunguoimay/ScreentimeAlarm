@@ -62,11 +62,13 @@ class ForegroundServiceController(
             if (dataFromActivity != null) {
                 backgroundService?.alarmController?.setAlarmData(dataFromActivity)
                 backgroundService?.alarmController?.startAlarm()
+                dataController.alarmViewData?.alarmController = backgroundService?.alarmController
             }
         } else if (connectionStatus == ConnectionStatus.ConnectedSecondTimeOn) {
             val dataFromService = backgroundService?.alarmController?.alarmData
             if (dataFromService != null) {
                 dataController.setAlarmData(dataFromService)
+                dataController.alarmViewData?.alarmController = backgroundService?.alarmController
             }
         } else if (connectionStatus == ConnectionStatus.NotConnectedOnStart) {
             val dataFromPersistent = dataController.loadDataFromPersistent()
