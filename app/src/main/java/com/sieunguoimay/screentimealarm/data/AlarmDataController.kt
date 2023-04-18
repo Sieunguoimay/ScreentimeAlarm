@@ -4,12 +4,12 @@ import android.util.Log
 
 class AlarmDataController {
     private val alarmDataHandlers: ArrayList<AlarmDataHandler> = ArrayList()
-    var alarmViewData: ViewData? = null
+    var alarmViewData: AlarmViewData? = null
         private set
 
     fun setAlarmData(alarmData: AlarmData){
         Log.d("","setAlarmData ${alarmDataHandlers.count()}")
-        alarmViewData = ViewData(alarmData)
+        alarmViewData = AlarmViewData(alarmData)
         invokeOnDataReady()
     }
 

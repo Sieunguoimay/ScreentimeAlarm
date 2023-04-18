@@ -2,12 +2,10 @@ package com.sieunguoimay.screentimealarm.data
 
 import com.sieunguoimay.screentimealarm.AlarmController
 import java.lang.Long.max
-import java.text.SimpleDateFormat
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-class ViewData(
+class AlarmViewData(
     val alarmData: AlarmData
 ) {
     val remainingSeconds: Long

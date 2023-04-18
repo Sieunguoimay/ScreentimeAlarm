@@ -11,7 +11,6 @@ import android.widget.TextView
 import com.sieunguoimay.screentimealarm.data.*
 import com.sieunguoimay.screentimealarm.databinding.ActivityMainBinding
 import java.util.*
-import kotlin.concurrent.schedule
 
 class UIController(
     private val context: Activity,
@@ -31,11 +30,12 @@ class UIController(
     private val currentScreenTimeText: TextView get() = binding.textCurrentScreenTime
     private val maxScreenTimeText: TextView get() = binding.textMaxScreenTime
 
-    private var mainButtonLock:Boolean = false
+    private var mainButtonLock: Boolean = false
+    private var progressRunningUI: ProgressRunningUI? = null
     fun setupEvents() {
 
         mainButton.setOnClickListener {
-            if(!mainButtonLock){
+            if (!mainButtonLock) {
                 mainButtonLock = true
                 serviceController.tryToggleService()
             }
@@ -47,13 +47,20 @@ class UIController(
             dataController.alarmViewData?.alarmData?.alarmConfigData?.setMaxScreenTime(newValue)
         }
         startOverButton.setOnClickListener {
-            if(!mainButtonLock){
+            if (!mainButtonLock) {
                 dataController.alarmViewData?.alarmController?.startOver()
             }
         }
 
         dataController.addHandler(dataHandler)
         serviceController.addHandler(serviceActiveHandler)
+
+        progressRunningUI = ProgressRunningUI(
+            startOverButton,
+            progressBar,
+            maxScreenTimeText,
+            currentScreenTimeText
+        )
     }
 
     private val dataHandler = object : AlarmDataHandler {
@@ -63,7 +70,6 @@ class UIController(
             syncViewWithData()
         }
     }
-
 
     private fun setupViewData() {
         dataController.alarmViewData?.alarmData?.alarmRuntimeData?.changeHandler?.add(
@@ -81,29 +87,33 @@ class UIController(
         override fun onConnectionStatusChanged(sender: ForegroundServiceController) {
             mainButtonLock = false
             if (serviceController.isActive) {
-                runTimerTask()
+                if (dataController.alarmViewData != null) {
+                    progressRunningUI?.setup(dataController.alarmViewData!!)
+                }
+//                runTimerTask()
             } else {
-                stopTimerTask()
+//                stopTimerTask()
+                progressRunningUI?.tearDown()
             }
         }
     }
 
-    private fun runTimerTask() {
-        val interval = 500 // interval in milliseconds
-        timer = Timer()
-        timer.scheduleAtFixedRate(object : TimerTask() {
-            override fun run() {
-                // This code will run every 0.5 seconds
-                context.runOnUiThread {
-                    updateTextCoolDownTime()
-                }
-            }
-        }, 0, interval.toLong())
-    }
-
-    private fun stopTimerTask() {
-        timer.cancel()
-    }
+//    private fun runTimerTask() {
+//        val interval = 500 // interval in milliseconds
+//        timer = Timer()
+//        timer.scheduleAtFixedRate(object : TimerTask() {
+//            override fun run() {
+//                // This code will run every 0.5 seconds
+//                context.runOnUiThread {
+//                    updateCoolDownTimeProgress()
+//                }
+//            }
+//        }, 0, interval.toLong())
+//    }
+//
+//    private fun stopTimerTask() {
+//        timer.cancel()
+//    }
 
     private fun syncViewWithData() {
         toggleUIWithServiceActiveness()
@@ -137,23 +147,23 @@ class UIController(
         val max =
             dataController.alarmViewData?.alarmData?.alarmConfigData?.maxScreenTimeMilliSeconds
         if (max != null) {
-            val t = ViewData.formatTime(max)
-            val zero = ViewData.formatTime(0)
+            val t = AlarmViewData.formatTime(max)
+            val zero = AlarmViewData.formatTime(0)
             maxScreenTimeText.text = t
             currentScreenTimeText.text = zero
             screenTimeMaxConfigText.text = t
         }
     }
 
-    private fun updateTextCoolDownTime() {
-
-        val t = dataController.alarmViewData?.getProgressedTimeFormatted()
-        currentScreenTimeText.text = t
-
-        val remaining = dataController.alarmViewData?.remainingMilliSeconds ?: 1
-        val total =
-            dataController.alarmViewData?.alarmData?.alarmConfigData?.maxScreenTimeMilliSeconds ?: 1
-        val progress = 1f - remaining.toFloat() / total.toFloat()
-        progressBar.progress = (progress * 100f).toInt()
-    }
+//    private fun updateCoolDownTimeProgress() {
+//
+//        val t = dataController.alarmViewData?.getProgressedTimeFormatted()
+//        currentScreenTimeText.text = t
+//
+//        val remaining = dataController.alarmViewData?.remainingMilliSeconds ?: 1
+//        val total =
+//            dataController.alarmViewData?.alarmData?.alarmConfigData?.maxScreenTimeMilliSeconds ?: 1
+//        val progress = 1f - remaining.toFloat() / total.toFloat()
+//        progressBar.progress = (progress * 100f).toInt()
+//    }
 }
