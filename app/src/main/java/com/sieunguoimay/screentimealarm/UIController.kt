@@ -18,7 +18,7 @@ class UIController(
     private val dataController: AlarmDataController,
     private val serviceController: ForegroundServiceController
 ) {
-    private var timer: Timer = Timer()
+//    private var timer: Timer = Timer()
 
     private val mainButton: Button get() = binding.mainButton
     private val numberPicker: NumberPicker get() = binding.numberPicker
