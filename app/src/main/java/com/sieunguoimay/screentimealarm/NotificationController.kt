@@ -1,5 +1,6 @@
 package com.sieunguoimay.screentimealarm
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
