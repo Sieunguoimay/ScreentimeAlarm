@@ -31,8 +31,8 @@ class NotificationController(private var service: Service) {
         remoteViewController =
             RemoteViewController(
                 contentView, notificationManager, notification, notificationId,
-                Icon.createWithResource(service, R.drawable.ico_drop_down),
-                Icon.createWithResource(service, R.drawable.ico_drop_up)
+//                Icon.createWithResource(service, R.drawable.ico_drop_down),
+//                Icon.createWithResource(service, R.drawable.ico_drop_up)
             )
     }
 
@@ -56,13 +56,13 @@ class NotificationController(private var service: Service) {
 //            .setContentTitle("Endless Service")
 //            .setContentText("This is your favorite endless service working")
                 .setContentIntent(pendingIntent)
-                .setFullScreenIntent(pendingIntent, false)
+                .setFullScreenIntent(pendingIntent, true)
                 .setSmallIcon(R.mipmap.ic_launcher)
 //            .setTicker("Ticker text")
                 .setStyle(NotificationCompat.DecoratedCustomViewStyle())
                 .setCustomContentView(contentSmallView)
                 .setCustomBigContentView(contentBigView)
-                .setPriority(NotificationCompat.PRIORITY_LOW) // for under android 26 compatibility
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // for under android 26 compatibility
                 .build(), contentBigView
         )
     }
@@ -94,21 +94,24 @@ class NotificationController(private var service: Service) {
 
     private fun createBigNotificationView(): RemoteViews {
         val contentView = RemoteViews(service.packageName, R.layout.layout_notification_big)
-        contentView.setTextViewText(R.id.titleTextView, "Big View")
-        if (Build.VERSION.SDK_INT >= VERSION_CODES.S) {
-            contentView.setViewVisibility(R.id.button_drop_down, View.GONE)
-        } else {
-            val remoteViewPendingIntent = createRemoteViewPendingIntent(R.id.button_drop_down)
-            contentView.setOnClickPendingIntent(R.id.button_drop_down, remoteViewPendingIntent)
-            contentView.setViewVisibility(R.id.layout_lower_part, View.GONE)
-        }
-
+//        contentView.setTextViewText(R.id.titleTextView, "Big View")
+//        if (Build.VERSION.SDK_INT >= VERSION_CODES.S) {
+//            contentView.setViewVisibility(R.id.button_drop_down, View.GONE)
+//        } else {
+//            val remoteViewPendingIntent = createRemoteViewPendingIntent(R.id.button_drop_down)
+//            contentView.setOnClickPendingIntent(R.id.button_drop_down, remoteViewPendingIntent)
+//            contentView.setViewVisibility(R.id.layout_lower_part, View.GONE)
+//        }
+        contentView.setOnClickPendingIntent(
+            R.id.button_start_over,
+            createRemoteViewPendingIntent(R.id.button_start_over)
+        )
         return contentView
     }
 
     private fun createSmallNotificationView(): RemoteViews {
         val contentView = RemoteViews(service.packageName, R.layout.layout_notification_small)
-        contentView.setTextViewText(R.id.titleTextView, "Small View")
+//        contentView.setTextViewText(R.id.titleTextView, "Small View")
         return contentView
     }
 
@@ -126,7 +129,7 @@ class NotificationController(private var service: Service) {
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         intent.action = RemoteViewBroadcastReceiver.ACTION_NAME
         intent.putExtra("view_id", viewId)
-        return PendingIntent.getBroadcast(service, 0, intent, 0)
+        return PendingIntent.getBroadcast(service, 0, intent, PendingIntent.FLAG_IMMUTABLE)
     }
 
     companion object {
@@ -138,8 +141,8 @@ class NotificationController(private var service: Service) {
         private val notificationManager: NotificationManager?,
         private val notification: Notification,
         private val notificationId: Int,
-        private val dropDownIcon: Icon,
-        private val dropUpIcon: Icon
+//        private val dropDownIcon: Icon,
+//        private val dropUpIcon: Icon
     ) {
         private var lowerPartVisible = false
         fun toggleLowerPart() {
@@ -153,10 +156,10 @@ class NotificationController(private var service: Service) {
                 R.id.layout_lower_part,
                 if (lowerPartVisible) View.VISIBLE else View.GONE
             )
-            remoteViews.setImageViewIcon(
-                R.id.drop_down_icon,
-                if (lowerPartVisible) dropUpIcon else dropDownIcon
-            )
+//            remoteViews.setImageViewIcon(
+//                R.id.drop_down_icon,
+//                if (lowerPartVisible) dropUpIcon else dropDownIcon
+//            )
         }
 
         private fun updateRemoteViews() {
@@ -171,8 +174,11 @@ class NotificationController(private var service: Service) {
 
         override fun onReceive(context: Context, intent: Intent) {
             val viewId = intent.getIntExtra("view_id", -1)
-            if (viewId == R.id.button_drop_down) {
-                remoteViewController?.toggleLowerPart()
+//            if (viewId == R.id.button_drop_down) {
+//                remoteViewController?.toggleLowerPart()
+//            }
+            if(viewId == R.id.button_start_over){
+//                remoteViewController?.star
             }
         }
     }
