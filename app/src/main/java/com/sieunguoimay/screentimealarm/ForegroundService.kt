@@ -28,7 +28,7 @@ class ForegroundService : Service() {
         super.onCreate()
         alarmController.setup()
         alarmController.alarmFireHandlers.add(alarmFireHandler)
-        notificationController = NotificationController(this)
+        notificationController = NotificationController(this, alarmController)
         notificationController.show()
     }
 

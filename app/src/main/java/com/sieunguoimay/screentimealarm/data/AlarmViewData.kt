@@ -12,10 +12,10 @@ class AlarmViewData(
         get() = (remainingMilliSeconds) / 1000L
     val remainingMilliSeconds: Long
         get() = max(alarmData.alarmRuntimeData.alarmFireTime - System.currentTimeMillis(), 0L)
+    var alarmController: AlarmController? = null
 
     fun getRemainingTimeFormatted(): String {
         return formatTime(remainingMilliSeconds)
-
     }
 
     fun getProgressedTimeFormatted(): String {
@@ -23,7 +23,6 @@ class AlarmViewData(
             alarmData.alarmConfigData.maxScreenTimeMilliSeconds - remainingMilliSeconds
         return formatTime(milliSeconds)
     }
-    var alarmController:AlarmController?=null
 
     companion object {
         fun formatTime(milliseconds: Long): String {
@@ -47,7 +46,9 @@ class AlarmViewData(
             if (minutes > 0) {
                 formattedTime.append("$minutes${unitNames[2]}")
             }
-            formattedTime.append("$seconds${unitNames[3]}")
+            if (seconds > 0) {
+                formattedTime.append("$seconds${unitNames[3]}")
+            }
             return formattedTime.toString()
         }
     }

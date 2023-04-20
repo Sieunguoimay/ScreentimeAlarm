@@ -18,8 +18,6 @@ class UIController(
     private val dataController: AlarmDataController,
     private val serviceController: ForegroundServiceController
 ) {
-//    private var timer: Timer = Timer()
-
     private val mainButton: Button get() = binding.mainButton
     private val numberPicker: NumberPicker get() = binding.numberPicker
     private val startOverButton: Button get() = binding.buttonStartOver
@@ -30,14 +28,16 @@ class UIController(
     private val currentScreenTimeText: TextView get() = binding.textCurrentScreenTime
     private val maxScreenTimeText: TextView get() = binding.textMaxScreenTime
 
-    private var mainButtonLock: Boolean = false
     private var progressRunningUI: ProgressRunningUI? = null
+    private var maxScreenTimeConfigUI: MaxScreenTimeConfigUI? = null
     fun setupEvents() {
 
         mainButton.setOnClickListener {
-            if (!mainButtonLock) {
-                mainButtonLock = true
-                serviceController.tryToggleService()
+            if (progressRunningUI != null) {
+                if (!progressRunningUI!!.mainButtonLock) {
+                    progressRunningUI!!.mainButtonLock = true
+                    serviceController.tryToggleService()
+                }
             }
         }
         numberPicker.minValue = 1
@@ -45,11 +45,6 @@ class UIController(
         numberPicker.setOnValueChangedListener { _, _, newValue ->
             Log.d("", "setOnValueChangedListener $newValue")
             dataController.alarmViewData?.alarmData?.alarmConfigData?.setMaxScreenTime(newValue)
-        }
-        startOverButton.setOnClickListener {
-            if (!mainButtonLock) {
-                dataController.alarmViewData?.alarmController?.startOver()
-            }
         }
 
         dataController.addHandler(dataHandler)
@@ -61,6 +56,13 @@ class UIController(
             maxScreenTimeText,
             currentScreenTimeText
         )
+        maxScreenTimeConfigUI = MaxScreenTimeConfigUI(
+            binding.layoutMaxScreenTimeConfig,
+            binding.textLine1Value,
+            binding.imageEditIcon,
+            binding.numberPicker
+        )
+        maxScreenTimeConfigUI!!.activate()
     }
 
     private val dataHandler = object : AlarmDataHandler {
@@ -85,40 +87,24 @@ class UIController(
     }
     private val serviceActiveHandler = object : ForegroundServiceController.ServiceActiveHandler {
         override fun onConnectionStatusChanged(sender: ForegroundServiceController) {
-            mainButtonLock = false
+            progressRunningUI?.mainButtonLock = false
             if (serviceController.isActive) {
                 if (dataController.alarmViewData != null) {
                     progressRunningUI?.setup(dataController.alarmViewData!!)
                 }
-//                runTimerTask()
+                maxScreenTimeConfigUI?.inactivate()
             } else {
-//                stopTimerTask()
                 progressRunningUI?.tearDown()
+                maxScreenTimeConfigUI?.activate()
             }
         }
     }
-
-//    private fun runTimerTask() {
-//        val interval = 500 // interval in milliseconds
-//        timer = Timer()
-//        timer.scheduleAtFixedRate(object : TimerTask() {
-//            override fun run() {
-//                // This code will run every 0.5 seconds
-//                context.runOnUiThread {
-//                    updateCoolDownTimeProgress()
-//                }
-//            }
-//        }, 0, interval.toLong())
-//    }
-//
-//    private fun stopTimerTask() {
-//        timer.cancel()
-//    }
 
     private fun syncViewWithData() {
         toggleUIWithServiceActiveness()
         updateNumberPicker()
         updateTimeDisplayTexts()
+        maxScreenTimeConfigUI!!.setData(dataController.alarmViewData?.alarmData?.alarmConfigData!!)
     }
 
     private fun toggleUIWithServiceActiveness() {
@@ -154,16 +140,4 @@ class UIController(
             screenTimeMaxConfigText.text = t
         }
     }
-
-//    private fun updateCoolDownTimeProgress() {
-//
-//        val t = dataController.alarmViewData?.getProgressedTimeFormatted()
-//        currentScreenTimeText.text = t
-//
-//        val remaining = dataController.alarmViewData?.remainingMilliSeconds ?: 1
-//        val total =
-//            dataController.alarmViewData?.alarmData?.alarmConfigData?.maxScreenTimeMilliSeconds ?: 1
-//        val progress = 1f - remaining.toFloat() / total.toFloat()
-//        progressBar.progress = (progress * 100f).toInt()
-//    }
 }

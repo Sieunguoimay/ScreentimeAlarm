@@ -33,6 +33,14 @@
 
 
 <!--    </RelativeLayout>-->
+<!--    <TextView-->
+<!--        android:id="@+id/text_alarming"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/text_placeholder"-->
+<!--        android:theme="@style/NotificationTextStyle"-->
+<!--        android:layout_marginBottom="5dp"-->
+<!--        />-->
 
     <RelativeLayout
         android:id="@+id/layout_lower_part"

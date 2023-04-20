@@ -14,7 +14,7 @@ class ProgressRunningUI(
     private val maxScreenTimeText: TextView,
     private val currentScreenTimeText: TextView,
 ) {
-    private var mainButtonLock: Boolean = false
+    var mainButtonLock: Boolean = false
     private var timer: Timer = Timer()
     private val mHandler = Handler(Looper.getMainLooper())
     private var alarmViewData: AlarmViewData? = null

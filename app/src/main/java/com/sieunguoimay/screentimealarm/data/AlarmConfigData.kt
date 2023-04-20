@@ -5,7 +5,7 @@ import android.util.Log
 class AlarmConfigData {
 
     val maxScreenTimeMilliSeconds: Long
-        get() = maxScreenTimeMinutes * 1000L
+        get() = maxScreenTimeMinutes * 60 * 1000L
 
     var maxScreenTimeMinutes: Int = 0
         private set
