@@ -14,6 +14,10 @@
     <string name="alarm_status">Alarm status:</string>
     <string name="alarm_goes_off">Time limit exceeded</string>
     <string name="start_over">Start over</string>
+    <string name="screen_off">Screen off</string>
     <string name="feel_free_to_use_your_phone">Feel free to use your phone. You will be notified whenever your screen time limit is exceeded. Turning off your phone would reset the alarm.</string>
     <string name="begin_toast">Alarm will go off in every %s of screen time</string>
+    <string name="notification_text">Every second counts</string>
+    <string name="common_shared_preferences">com.sieunguoimay.screentimealarm.COMMON_SHARED_PREFERENCES</string>
+    <string name="save_max_screen_time">save_max_screen_time</string>
 </resources>

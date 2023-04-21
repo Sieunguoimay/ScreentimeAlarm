@@ -1,26 +1,22 @@
-package com.sieunguoimay.screentimealarm
+package com.sieunguoimay.screentimealarm.notification
 
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.os.SystemClock
-import android.util.Log
-import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.sieunguoimay.screentimealarm.data.AlarmViewData
-import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.Method
+import com.sieunguoimay.screentimealarm.AlarmController
+import com.sieunguoimay.screentimealarm.MainActivity
+import com.sieunguoimay.screentimealarm.R
 
 
 class NotificationController(
     private val service: Service,
-    private val alarmController: AlarmController
+    private val alarmController: AlarmController,
 ) : AlarmController.AlarmStartOverHandler {
 
     private val alarmChannelId = "Alarm Channel ID"
@@ -44,8 +40,6 @@ class NotificationController(
     }
 
     override fun onAlarmStartOver(sender: AlarmController) {
-//        remoteViewController?.createNotificationForStartOver()
-//        notificationManager?.notify(notificationId, remoteViewController?.notification)
         startThread()
     }
 
@@ -62,7 +56,6 @@ class NotificationController(
                 remoteViewController?.updateProgress()
                 notificationManager?.notify(notificationId, remoteViewController?.notification)
                 SystemClock.sleep(1000)
-                Log.d("", "Progress")
             }
         }.start()
     }
@@ -80,7 +73,7 @@ class NotificationController(
         val stringProvider = createStringProvider()
         notificationManager =
             service.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        remoteViewController = RemoteViewController(
+        remoteViewController = RemoteViewsController(
             contentBigView, contentSmallView,
             alarmBuilder, progressBuilder, stringProvider, alarmController
 //                Icon.createWithResource(service, R.drawable.ico_drop_down),
@@ -88,8 +81,8 @@ class NotificationController(
         )
     }
 
-    private fun createStringProvider(): RemoteViewController.ResourceProvider {
-        return RemoteViewController.ResourceProvider(
+    private fun createStringProvider(): RemoteViewsController.ResourceProvider {
+        return RemoteViewsController.ResourceProvider(
             service.getString(R.string.alarm_goes_off),
             service.getColor(R.color.progress),
             service.getColor(R.color.progress_red)
@@ -106,10 +99,6 @@ class NotificationController(
                 NotificationManager.IMPORTANCE_HIGH
             ).let {
                 it.description = "Endless Service channel"
-//                it.enableLights(true)
-//                it.lightColor = Color.RED
-//                it.enableVibration(true)
-//                it.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
                 it
             }
 
@@ -138,8 +127,8 @@ class NotificationController(
             .setSmallIcon(R.drawable.ico_eye_drop)
 //            .setTicker("Ticker text")
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setPriority(NotificationCompat.PRIORITY_HIGH) // for under android 26 compatibility
-
+            .setPriority(NotificationCompat.PRIORITY_HIGH)// for under android 26 compatibility
+            .setShowWhen(false)
     }
 
     private fun createProgressNotificationBuilder(): NotificationCompat.Builder {
@@ -149,20 +138,17 @@ class NotificationController(
         else NotificationCompat.Builder(service))
             .setContentIntent(pendingIntent)
             .setFullScreenIntent(pendingIntent, false)
-//            .setContentTitle("Endless Service")
-//            .setContentText("This is your favorite endless service working")
             .setSmallIcon(R.drawable.ico_eye_drop)
-//            .setTicker("Ticker text")
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-            .setPriority(NotificationCompat.PRIORITY_LOW) // for under android 26 compatibility
-
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setShowWhen(false)
     }
 
     private fun createBigNotificationView(): RemoteViews {
         val contentView = RemoteViews(service.packageName, R.layout.layout_notification_big)
         contentView.setOnClickPendingIntent(
             R.id.button_start_over,
-            createRemoteViewPendingIntent(R.id.button_start_over)
+            createRemoteViewPendingIntent(R.id.button_start_over, 0)
         )
         return contentView
     }
@@ -180,94 +166,16 @@ class NotificationController(
         }
     }
 
-    private fun createRemoteViewPendingIntent(viewId: Int): PendingIntent {
+    private fun createRemoteViewPendingIntent(viewId: Int, code: Int): PendingIntent {
         val intent = Intent(service, RemoteViewBroadcastReceiver::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         intent.action = RemoteViewBroadcastReceiver.ACTION_NAME
         intent.putExtra("view_id", viewId)
-        return PendingIntent.getBroadcast(service, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        return PendingIntent.getBroadcast(service, code, intent, PendingIntent.FLAG_IMMUTABLE)
     }
 
     companion object {
-        var remoteViewController: RemoteViewController? = null
-    }
-
-    class RemoteViewController(
-        private val contentBigView: RemoteViews,
-        private val contentSmallView: RemoteViews,
-        private val alarmBuilder: NotificationCompat.Builder,
-        private val progressBuilder: NotificationCompat.Builder,
-        private val resourceProvider: ResourceProvider,
-        private val alarmController: AlarmController
-    ) {
-        var notification: Notification? = null
-        private var alarmViewData: AlarmViewData? = null
-        fun startOver() {
-            alarmController.startOver()
-        }
-
-        fun updateProgress() {
-            updateBigView(false)
-            notification = progressBuilder
-                .setCustomContentView(contentSmallView)
-                .setCustomBigContentView(contentBigView)
-                .build()
-        }
-
-        fun createNotificationForFirstTime() {
-            updateBigView(false)
-            notification = alarmBuilder
-                .setCustomContentView(contentSmallView)
-                .setCustomBigContentView(contentBigView)
-                .build()
-        }
-
-        fun createNotificationForDropDown() {
-            updateBigView(true)
-            notification = alarmBuilder
-                .setCustomContentView(contentBigView)
-                .setCustomBigContentView(contentBigView)
-                .build()
-        }
-
-        private fun updateBigView(alarming: Boolean) {
-            if (alarming) {
-                contentBigView.setTextViewText(
-                    R.id.text_current_screen_time,
-                    resourceProvider.alarmGoesOff
-                )
-                contentBigView.setViewVisibility(R.id.progress_bar_red, View.VISIBLE)
-                contentBigView.setProgressBar(R.id.progress_bar, 100, 100, false)
-                return
-            }else{
-                contentBigView.setViewVisibility(R.id.progress_bar_red, View.GONE)
-            }
-
-            if (alarmController.alarmData == null) return
-
-            if (alarmViewData == null) {
-                alarmViewData = AlarmViewData(alarmController.alarmData!!)
-            }
-            val t = alarmViewData!!.getProgressedTimeFormatted()
-            contentBigView.setTextViewText(R.id.text_current_screen_time, t)
-            val max =
-                AlarmViewData.formatTime(alarmViewData!!.alarmData.alarmConfigData.maxScreenTimeMilliSeconds)
-            contentBigView.setTextViewText(R.id.text_max_screen_time, max)
-
-            val remaining = alarmViewData!!.remainingMilliSeconds
-            val total = alarmViewData!!.alarmData.alarmConfigData.maxScreenTimeMilliSeconds
-            val progress = 1f - remaining.toFloat() / total.toFloat()
-            val p = (progress * 100f).toInt()
-
-            contentBigView.setProgressBar(R.id.progress_bar, 100, p, false)
-        }
-
-        class ResourceProvider(
-            val alarmGoesOff: String,
-            val progressGreenColor: Int,
-            val progressRedColor: Int
-        )
-
+        var remoteViewController: RemoteViewsController? = null
     }
 
     class RemoteViewBroadcastReceiver : BroadcastReceiver() {
@@ -282,5 +190,4 @@ class NotificationController(
             }
         }
     }
-
 }

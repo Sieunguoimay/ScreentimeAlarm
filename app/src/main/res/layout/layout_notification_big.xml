@@ -5,129 +5,134 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-<!--    <RelativeLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="30dp">-->
+    <!--    <RelativeLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="30dp">-->
 
-<!--        <include-->
-<!--            layout="@layout/layout_notification_small"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent" />-->
+    <!--        <include-->
+    <!--            layout="@layout/layout_notification_small"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent" />-->
 
-<!--        <LinearLayout-->
-<!--            android:id="@+id/button_drop_down"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_marginHorizontal="10dp"-->
-<!--            android:paddingHorizontal="5dp"-->
-<!--            android:theme="@style/NotificationImageStyle">-->
+    <!--        <LinearLayout-->
+    <!--            android:id="@+id/button_drop_down"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="match_parent"-->
+    <!--            android:layout_alignParentEnd="true"-->
+    <!--            android:layout_marginHorizontal="10dp"-->
+    <!--            android:paddingHorizontal="5dp"-->
+    <!--            android:theme="@style/NotificationImageStyle">-->
 
-<!--            <ImageView-->
-<!--                android:id="@+id/drop_down_icon"-->
-<!--                android:layout_width="20dp"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:src="@drawable/ico_drop_down"-->
-<!--                android:contentDescription="@string/app_name"/>-->
-<!--        </LinearLayout>-->
+    <!--            <ImageView-->
+    <!--                android:id="@+id/drop_down_icon"-->
+    <!--                android:layout_width="20dp"-->
+    <!--                android:layout_height="match_parent"-->
+    <!--                android:src="@drawable/ico_drop_down"-->
+    <!--                android:contentDescription="@string/app_name"/>-->
+    <!--        </LinearLayout>-->
 
 
-<!--    </RelativeLayout>-->
-<!--    <TextView-->
-<!--        android:id="@+id/text_alarming"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="@string/text_placeholder"-->
-<!--        android:theme="@style/NotificationTextStyle"-->
-<!--        android:layout_marginBottom="5dp"-->
-<!--        />-->
+    <!--    </RelativeLayout>-->
+    <!--    <TextView-->
+    <!--        android:id="@+id/text_alarming"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="@string/text_placeholder"-->
+    <!--        android:theme="@style/NotificationTextStyle"-->
+    <!--        android:layout_marginBottom="5dp"-->
+    <!--        />-->
 
     <RelativeLayout
         android:id="@+id/layout_lower_part"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        >
-<!--        android:layout_marginBottom="5dp"-->
+        android:layout_height="30dp">
+        <!--        android:layout_marginBottom="5dp"-->
 
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="1dp"-->
-<!--            android:layout_marginHorizontal="10dp"-->
-<!--            android:layout_marginTop="1dp"-->
-<!--            android:theme="@style/NotificationButtonStyle">-->
+        <!--        <LinearLayout-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="1dp"-->
+        <!--            android:layout_marginHorizontal="10dp"-->
+        <!--            android:layout_marginTop="1dp"-->
+        <!--            android:theme="@style/NotificationButtonStyle">-->
 
-<!--        </LinearLayout>-->
+        <!--        </LinearLayout>-->
 
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
-<!--            android:layout_marginTop="5dp"-->
+            android:id="@+id/layout_start_over"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:padding="1dp"
+            android:theme="@style/NotificationButtonLineStyle">
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/button_start_over"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:paddingHorizontal="5dp"
                 android:theme="@style/NotificationButtonStyle">
-<!--                android:layout_marginHorizontal="10dp"-->
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_marginHorizontal="5dp"
                     android:gravity="center"
                     android:text="@string/start_over"
                     android:textAllCaps="true"
-                    android:theme="@style/NotificationTextStyle" />
-            </LinearLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="5dp"
-                android:paddingTop="5dp"
-                android:layout_toEndOf="@id/button_start_over">
-
-<!--                android:layout_marginTop="2dp"-->
-<!--                android:layout_marginEnd="8dp"-->
-                <ProgressBar
-                    android:id="@+id/progress_bar"
-                    style="@android:style/Widget.ProgressBar.Horizontal"
-                    android:theme="@style/ProgressBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="5dp"
-                    android:progress="25"
-                    />
-
-                <ProgressBar
-                    android:id="@+id/progress_bar_red"
-                    style="@android:style/Widget.ProgressBar.Horizontal"
-                    android:theme="@style/ProgressBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="5dp"
-                    android:progress="100"
-                    android:progressTint="@color/progress_red"
-                    />
-
-                <TextView
-                    android:id="@+id/text_current_screen_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_below="@id/progress_bar"
-                    android:text="@string/time_placeholder"
-                    android:theme="@style/NotificationTextStyle" />
-
-                <TextView
-                    android:id="@+id/text_max_screen_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_below="@id/progress_bar"
-                    android:layout_alignParentEnd="true"
-                    android:text="@string/time_placeholder"
+                    android:textSize="14sp"
                     android:theme="@style/NotificationTextStyle" />
 
             </RelativeLayout>
         </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@id/layout_start_over"
+            android:layout_marginTop="5dp"
+            >
+
+            <TextView
+                android:id="@+id/text_current_screen_time"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_below="@id/layout_progress_bar"
+                android:text="@string/time_placeholder"
+                android:theme="@style/NotificationTextStyle" />
+
+            <RelativeLayout
+                android:id="@+id/layout_progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="5dp">
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:progress="0"
+                    android:theme="@style/ProgressBar" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar_red"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:progress="0"
+                    android:progressTint="@color/progress_red"
+                    android:theme="@style/ProgressBar" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/text_max_screen_time"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_below="@id/layout_progress_bar"
+                android:layout_alignParentEnd="true"
+                android:text="@string/time_placeholder"
+                android:theme="@style/NotificationTextStyle" />
+
+        </RelativeLayout>
+
 
     </RelativeLayout>
 

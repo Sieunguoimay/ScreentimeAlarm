@@ -41,6 +41,9 @@
     <style name="NotificationImageStyle">
         <item name="android:tint">@color/button_notification_color_black</item>
     </style>
+    <style name="NotificationButtonLineStyle">
+        <item name="android:background">@color/text_notification_color_gray</item>
+    </style>
     <style name="ImageViewStyle">
         <item name="tint">@color/icon_color_brown</item>
     </style>

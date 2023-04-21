@@ -15,10 +15,11 @@
     <color name="text_color_brown_light">#F3CFA6</color>
     <color name="icon_color_brown_light">#FFEFDC</color>
     <color name="button_color">#f1ece4</color>
-    <color name="button_color_black">#000000</color>
+    <color name="button_color_black">#404040</color>
     <color name="button_notification_color_black">#1E1E1E</color>
     <color name="button_notification_color_white">#F1F1F1</color>
     <color name="text_notification_color_white">#F1F1F1</color>
+    <color name="text_notification_color_gray">#808080</color>
     <color name="text_notification_color_black">#1E1E1E</color>
     <color name="transparent">#00000000</color>
     <color name="progress">#cae4a9</color>

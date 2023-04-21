@@ -34,18 +34,26 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         serviceController.onActivityDestroy()
+        dataController.savePersistentData(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        dataController.savePersistentData(this)
     }
 
     private fun tryRequestPermissions() {
+
+        makeSurePermission(Manifest.permission.RECEIVE_BOOT_COMPLETED)
+        makeSurePermission(Manifest.permission.VIBRATE)
+
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.FOREGROUND_SERVICE
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            // Permission is already granted
-            onPermissionGranted()
+            requestNotificationPermission()
         } else {
-            // Permission is not granted, request it
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 ActivityCompat.requestPermissions(
                     this, arrayOf(Manifest.permission.FOREGROUND_SERVICE), 1
@@ -53,6 +61,24 @@ class MainActivity : AppCompatActivity() {
             } else {
                 onPermissionDenied()
             }
+        }
+    }
+
+    private fun requestNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(
+                    this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 2
+                )
+            } else {
+                onPermissionDenied()
+            }
+        } else {
+            onPermissionGranted()
         }
     }
 
@@ -64,10 +90,27 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                requestNotificationPermission()
+            } else {
+                onPermissionDenied()
+            }
+        } else if (requestCode == 2) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 onPermissionGranted()
             } else {
                 onPermissionDenied()
             }
+        }
+    }
+
+    private fun makeSurePermission(permission: String) {
+        if (ContextCompat.checkSelfPermission(
+                this, permission
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(permission), 3
+            )
         }
     }
 

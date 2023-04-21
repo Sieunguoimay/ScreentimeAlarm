@@ -23,11 +23,9 @@ class ForegroundServiceController(
     fun tryBindingToTheService() {
         setConnectionStatus(ConnectionStatus.NotConnectedOnStart)
         ForegroundService.bindService(context, connection)
-        Log.d("", "tryBindingToTheService")
     }
 
     fun onActivityDestroy() {
-
     }
 
     fun tryToggleService() {
@@ -72,7 +70,7 @@ class ForegroundServiceController(
                 Toast.makeText(
                     context,
                     String.format(backgroundService!!.getString(R.string.begin_toast), time),
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_LONG
                 ).show()
             }
         } else if (connectionStatus == ConnectionStatus.ConnectedSecondTimeOn) {
@@ -82,7 +80,7 @@ class ForegroundServiceController(
                 dataController.alarmViewData?.alarmController = backgroundService?.alarmController
             }
         } else if (connectionStatus == ConnectionStatus.NotConnectedOnStart) {
-            val dataFromPersistent = dataController.loadDataFromPersistent()
+            val dataFromPersistent = dataController.loadDataFromPersistent(context)
             dataController.setAlarmData(dataFromPersistent)
         } else if (connectionStatus == ConnectionStatus.Disconnected) {
 
@@ -109,7 +107,6 @@ class ForegroundServiceController(
             }
 
             // Do something with the service reference
-            Log.d("", "onServiceConnected")
             unlockTheButton()
         }
 
@@ -121,7 +118,6 @@ class ForegroundServiceController(
         override fun onServiceDestroy(service: ForegroundService) {
             backgroundService = null
             unlockTheButton()
-            Log.d("", "onServiceDestroy")
             setConnectionStatus(ConnectionStatus.Disconnected)
         }
     }

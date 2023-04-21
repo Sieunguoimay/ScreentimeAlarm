@@ -36,7 +36,6 @@ class AlarmController {
     }
 
     fun stopAlarm() {
-        Log.d("", "stopAlarm")
         isRunning = false
         timer.cancel()
     }
@@ -60,8 +59,6 @@ class AlarmController {
             Log.e("", "Setup alarm with invalid time $minutes")
             return
         }
-        Log.d("", "setupAlarm $minutes")
-
         val delayMillis = minutes.toLong() * 60 * 1000L
         alarmData?.alarmRuntimeData?.setAlarmFireTime(System.currentTimeMillis() + delayMillis)
         timer = Timer()

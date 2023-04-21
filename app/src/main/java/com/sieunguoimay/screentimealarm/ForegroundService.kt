@@ -1,20 +1,14 @@
 package com.sieunguoimay.screentimealarm
 
 import android.app.Service
+import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
-import android.os.Binder
-import android.os.Build
-import android.os.CombinedVibration
-import android.os.IBinder
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
-import android.util.Log
-import android.widget.Toast
+import android.os.*
 import androidx.core.content.ContextCompat
+import com.sieunguoimay.screentimealarm.notification.NotificationController
 
 
 class ForegroundService : Service() {
@@ -26,15 +20,7 @@ class ForegroundService : Service() {
     var serviceDestroyHandler: ServiceDestroyHandler? = null
     val alarmController = AlarmController()
 
-    private val vibratorManager: VibratorManager by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-        } else {
-            TODO("VERSION.SDK_INT < S")
-        }
-    }
     override fun onBind(p0: Intent?): IBinder {
-        Log.d("", "onBind")
         return LocalBinder()
     }
 
@@ -42,6 +28,7 @@ class ForegroundService : Service() {
         super.onCreate()
         alarmController.setup()
         alarmController.alarmFireHandlers.add(alarmFireHandler)
+        alarmController.alarmStartOverHandlers.add(alarmStartOverHandler)
         notificationController = NotificationController(this, alarmController)
         notificationController.show()
     }
@@ -62,10 +49,12 @@ class ForegroundService : Service() {
         isActive = false
         unregisterReceiver(screenStateReceiver)
         alarmController.alarmFireHandlers.remove(alarmFireHandler)
+        alarmController.alarmStartOverHandlers.remove(alarmStartOverHandler)
         alarmController.cleanup()
-        screenStateReceiver.onUnregister(applicationContext)
+        screenStateReceiver.onUnregister()
         notificationController.dismiss()
         serviceDestroyHandler?.onServiceDestroy(this)
+        stopNoise()
     }
 
     private fun startBackgroundTask() {
@@ -75,49 +64,84 @@ class ForegroundService : Service() {
             addAction(Intent.ACTION_SCREEN_OFF)
         }
         registerReceiver(screenStateReceiver, intentFilter)
-        screenStateReceiver.onRegister(applicationContext, alarmController)
-
-        //        Thread {
-//            while (isActive) {
-//                // Do your task here
-//            }
-//        }.start()
+        screenStateReceiver.onRegister(alarmController)
     }
 
     private val alarmFireHandler = object : AlarmController.AlarmFireHandler {
         override fun onAlarmFire(sender: AlarmController) {
             notificationController.dropDown()
-
-            Log.d("", "onAlarmFire")
+            makeNoise()
+        }
+    }
+    private val alarmStartOverHandler = object : AlarmController.AlarmStartOverHandler {
+        override fun onAlarmStartOver(sender: AlarmController) {
+            stopNoise()
         }
     }
 
-    private fun isPrimitiveSupported(effectId: Int): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            vibratorManager.defaultVibrator.areAllPrimitivesSupported(effectId)
+    private fun makeNoise() {
+        tryVibrate()
+    }
+
+    private fun stopNoise() {
+        stopVibrate()
+    }
+
+    private fun tryVibrate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            val effect = createEffect()
+            vibratorManager.vibrate(CombinedVibration.createParallel(effect!!))
         } else {
-            TODO("VERSION.SDK_INT < S")
-        }
-    }
-    private fun tryVibrate(effectId: Int) {
-        if (isPrimitiveSupported(effectId)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                vibratorManager.vibrate(
-                    CombinedVibration.createParallel(
-                        VibrationEffect.startComposition()
-                            .addPrimitive(effectId)
-                            .compose()
-                    )
-                )
+
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (vibrator.hasVibrator()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val effect = createEffect()
+                    vibrator.cancel()
+                    vibrator.vibrate(effect)
+                } else {
+                    vibrator.vibrate(getPattern(), 0)
+                }
             }
-        } else {
-            Toast.makeText(
-                this,
-                "This primitive is not supported by this device.",
-                Toast.LENGTH_LONG,
-            ).show()
         }
     }
+
+    private fun stopVibrate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.cancel()
+        } else {
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            vibrator.cancel()
+        }
+    }
+
+    private fun getPattern(): LongArray {
+        return longArrayOf(1000, 300, 1000, 300)
+    }
+
+    private fun createEffect(): VibrationEffect? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            val amplitudes =
+                intArrayOf(
+                    0,
+                    VibrationEffect.DEFAULT_AMPLITUDE,
+                    0,
+                    VibrationEffect.DEFAULT_AMPLITUDE,
+                )
+            VibrationEffect.createWaveform(
+                getPattern(), amplitudes,
+                0
+            )
+        } else {
+            null
+        }
+    }
+
     companion object {
 
         fun startService(context: Context, connection: ServiceConnection) {
@@ -128,11 +152,9 @@ class ForegroundService : Service() {
                 context.startService(intent)
             }
             context.bindService(intent, connection, 0)
-            Log.d("", "startService")
         }
 
         fun bindService(context: Context, connection: ServiceConnection): Boolean {
-            Log.d("", "bindService")
             val intent = Intent(context, ForegroundService::class.java)
             return context.bindService(intent, connection, 0)
         }
@@ -141,7 +163,6 @@ class ForegroundService : Service() {
             val intent = Intent(context, ForegroundService::class.java)
             context.unbindService(connection)
             context.stopService(intent)
-            Log.d("", "stopService")
         }
     }
 

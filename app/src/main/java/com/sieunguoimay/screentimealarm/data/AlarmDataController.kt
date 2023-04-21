@@ -1,27 +1,43 @@
 package com.sieunguoimay.screentimealarm.data
 
-import android.util.Log
+import android.content.Context
+import com.sieunguoimay.screentimealarm.R
 
 class AlarmDataController {
     private val alarmDataHandlers: ArrayList<AlarmDataHandler> = ArrayList()
     var alarmViewData: AlarmViewData? = null
         private set
 
-    fun setAlarmData(alarmData: AlarmData){
-        Log.d("","setAlarmData ${alarmDataHandlers.count()}")
+    fun setAlarmData(alarmData: AlarmData) {
         alarmViewData = AlarmViewData(alarmData)
         invokeOnDataReady()
     }
 
-    fun loadDataFromPersistent():AlarmData{
+    fun loadDataFromPersistent(context: Context): AlarmData {
+        val sharedPref = context.getSharedPreferences(
+            context.getString(R.string.common_shared_preferences),0
+        )
+
+        val maxScreenTime = sharedPref.getInt(context.getString(R.string.save_max_screen_time), 10)
         val alarmConfigData = AlarmConfigData()
-        alarmConfigData.setMaxScreenTime(10)
-        return AlarmData(alarmConfigData, alarmRuntimeData = AlarmRuntimeData())
-     }
+
+        alarmConfigData.setMaxScreenTime(maxScreenTime)
+        return AlarmData(alarmConfigData, AlarmRuntimeData())
+    }
+
+    fun savePersistentData(context: Context) {
+        if (alarmViewData == null) return
+        val sharedPref = context.getSharedPreferences(
+            context.getString(R.string.common_shared_preferences), 0
+        )
+        sharedPref.edit().putInt(
+            context.getString(R.string.save_max_screen_time),
+            alarmViewData!!.alarmData.alarmConfigData.maxScreenTimeMinutes
+        ).apply()
+    }
 
     fun addHandler(handler: AlarmDataHandler) {
         alarmDataHandlers.add(handler)
-        Log.d("","addHandler ${alarmDataHandlers.count()}")
     }
 
     private fun invokeOnDataReady() {
