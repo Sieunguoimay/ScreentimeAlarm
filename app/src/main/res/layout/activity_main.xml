@@ -4,7 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:focusableInTouchMode="true"
+    android:clickable="true"
+    android:focusable="true"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,7 +48,7 @@
 
             <LinearLayout
                 android:id="@+id/layout_max_screen_time_config"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 >
@@ -53,7 +57,9 @@
                     android:id="@+id/text_line_1_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/disable" />
+                    android:text="@string/disable"
+                    android:layout_marginStart="2dp"
+                    />
                 <ImageView
                     android:id="@+id/image_edit_icon"
                     android:layout_width="15dp"
@@ -62,6 +68,7 @@
                     android:src="@drawable/ico_pencil"
                     android:theme="@style/ImageViewStyle"
                     android:layout_gravity="center"
+                    android:layout_marginEnd="5dp"
                     />
             </LinearLayout>
 
@@ -70,6 +77,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/layout_max_screen_time_config"
+                android:layout_marginStart="2dp"
                 android:text="@string/disable" />
 
         </RelativeLayout>
@@ -79,12 +87,12 @@
         android:id="@+id/number_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:theme="@style/DefaultNumberPickerTheme"
+        android:theme="@style/NumberPicker"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.43"
+        app:layout_constraintVertical_bias="0.42"
         tools:ignore="MissingConstraints" />
 
     <LinearLayout
@@ -141,12 +149,12 @@
             <ProgressBar
                 android:id="@+id/progress_bar"
                 style="@android:style/Widget.ProgressBar.Horizontal"
+                android:theme="@style/ProgressBar"
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
                 android:layout_centerVertical="true"
                 android:progress="25"
-                android:progressBackgroundTint="@color/button_color"
-                android:progressTint="@color/progress" />
+                />
 
             <TextView
                 android:id="@+id/text_current_screen_time"
@@ -169,6 +177,7 @@
     </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/layout_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -180,29 +189,45 @@
 
         <android.widget.Button
             android:id="@+id/button_start_over"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
             android:paddingHorizontal="10dp"
             android:text="@string/start_over"
-            android:textColor="@color/text_color_brown"
             android:textSize="20sp" />
 
         <android.widget.Button
             android:id="@+id/main_button"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/button_start_over"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
             android:paddingHorizontal="10dp"
             android:text="@string/enable"
-            android:textColor="@color/text_color_brown"
             android:textSize="20sp" />
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_buttons"
+        app:layout_constraintVertical_bias=".3"
+        >
+
+        <TextView
+            android:id="@+id/text_bottom_guide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/feel_free_to_use_your_phone"
+            android:textStyle="italic"
+            android:textAlignment="center"
+            />
+    </RelativeLayout>
     <!--    <android.widget.Button-->
     <!--        android:id="@+id/main_button"-->
     <!--        android:layout_width="wrap_content"-->

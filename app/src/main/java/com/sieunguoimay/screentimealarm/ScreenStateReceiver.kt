@@ -23,14 +23,14 @@ class ScreenStateReceiver : BroadcastReceiver() {
     }
 
     private fun onScreenOn(context: Context?) {
-        Toast.makeText(context, "Screen is turned on", Toast.LENGTH_SHORT).show()
-        Log.d("", "Screen is turned on")
+//        Toast.makeText(context, "Screen is turned on", Toast.LENGTH_SHORT).show()
+//        Log.d("", "Screen is turned on")
         alarmController?.startAlarm()
     }
 
     private fun onScreenOff(context: Context?) {
-        Toast.makeText(context, "Screen is turned off", Toast.LENGTH_SHORT).show()
-        Log.d("", "Screen is turned off")
+//        Toast.makeText(context, "Screen is turned off", Toast.LENGTH_SHORT).show()
+//        Log.d("", "Screen is turned off")
         alarmController?.stopAlarm()
     }
 

@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">ScreenTimeAlarm</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="app_name">Screen Time Alarm</string>
+    <string name="title_activity_main">Screen Time Alarm</string>
     <!-- Strings used for fragments for navigation -->
     <string name="next">Next</string>
     <string name="previous">Previous</string>
@@ -10,8 +10,10 @@
     <string name="off">Off</string>
     <string name="text_placeholder">Placeholder text</string>
     <string name="time_placeholder">3m20s</string>
-    <string name="max_screen_time">Maximum screen time</string>
-    <string name="alarm_status">Alarm status</string>
-    <string name="alarm_goes_off">Alarming</string>
+    <string name="max_screen_time">Limited screen time:</string>
+    <string name="alarm_status">Alarm status:</string>
+    <string name="alarm_goes_off">Time limit exceeded</string>
     <string name="start_over">Start over</string>
+    <string name="feel_free_to_use_your_phone">Feel free to use your phone. You will be notified whenever your screen time limit is exceeded. Turning off your phone would reset the alarm.</string>
+    <string name="begin_toast">Alarm will go off in every %s of screen time</string>
 </resources>

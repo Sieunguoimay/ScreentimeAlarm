@@ -1,14 +1,20 @@
 package com.sieunguoimay.screentimealarm
 
+import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.ColorFilter
 import android.os.Handler
 import android.os.Looper
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.graphics.ColorUtils
 import com.sieunguoimay.screentimealarm.data.AlarmViewData
 import java.util.*
 
 class ProgressRunningUI(
+    private val context: Context,
     private val startOverButton: Button,
     private val progressBar: ProgressBar,
     private val maxScreenTimeText: TextView,
@@ -71,5 +77,28 @@ class ProgressRunningUI(
         val total = alarmViewData!!.alarmData.alarmConfigData.maxScreenTimeMilliSeconds
         val progress = 1f - remaining.toFloat() / total.toFloat()
         progressBar.progress = (progress * 100f).toInt()
+        val greenColor = context.getColor(R.color.progress)
+        val redColor = context.getColor(R.color.progress_red)
+        progressBar.progressTintList =
+            ColorStateList.valueOf(calculateProgressTint(greenColor, redColor, progress))
+    }
+
+    companion object {
+
+        fun calculateProgressTint(
+            greenColor: Int,
+            redColor: Int,
+            progress: Float
+        ): Int {
+            val color =
+                ColorUtils.blendARGB(greenColor, redColor, clampProgress(progress, 0.7f, .95f))
+            return (color)
+        }
+
+        private fun clampProgress(progress: Float, min: Float, max: Float): Float {
+            if (progress <= min) return 0f
+            if (progress >= max) return 1f
+            return (progress - min) / (max - min)
+        }
     }
 }

@@ -1,15 +1,21 @@
 package com.sieunguoimay.screentimealarm
 
-import android.app.*
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.os.Binder
 import android.os.Build
+import android.os.CombinedVibration
 import android.os.IBinder
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.ContextCompat
+
 
 class ForegroundService : Service() {
 
@@ -19,6 +25,14 @@ class ForegroundService : Service() {
 
     var serviceDestroyHandler: ServiceDestroyHandler? = null
     val alarmController = AlarmController()
+
+    private val vibratorManager: VibratorManager by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        } else {
+            TODO("VERSION.SDK_INT < S")
+        }
+    }
     override fun onBind(p0: Intent?): IBinder {
         Log.d("", "onBind")
         return LocalBinder()
@@ -73,10 +87,37 @@ class ForegroundService : Service() {
     private val alarmFireHandler = object : AlarmController.AlarmFireHandler {
         override fun onAlarmFire(sender: AlarmController) {
             notificationController.dropDown()
+
             Log.d("", "onAlarmFire")
         }
     }
 
+    private fun isPrimitiveSupported(effectId: Int): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            vibratorManager.defaultVibrator.areAllPrimitivesSupported(effectId)
+        } else {
+            TODO("VERSION.SDK_INT < S")
+        }
+    }
+    private fun tryVibrate(effectId: Int) {
+        if (isPrimitiveSupported(effectId)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                vibratorManager.vibrate(
+                    CombinedVibration.createParallel(
+                        VibrationEffect.startComposition()
+                            .addPrimitive(effectId)
+                            .compose()
+                    )
+                )
+            }
+        } else {
+            Toast.makeText(
+                this,
+                "This primitive is not supported by this device.",
+                Toast.LENGTH_LONG,
+            ).show()
+        }
+    }
     companion object {
 
         fun startService(context: Context, connection: ServiceConnection) {

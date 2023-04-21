@@ -93,10 +93,21 @@
                 <ProgressBar
                     android:id="@+id/progress_bar"
                     style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:theme="@style/ProgressBar"
                     android:layout_width="match_parent"
                     android:layout_height="5dp"
                     android:progress="25"
-                    android:progressTint="@color/green" />
+                    />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar_red"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:theme="@style/ProgressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:progress="100"
+                    android:progressTint="@color/progress_red"
+                    />
 
                 <TextView
                     android:id="@+id/text_current_screen_time"

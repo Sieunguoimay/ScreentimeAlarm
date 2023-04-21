@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
+import android.widget.Toast
 import com.sieunguoimay.screentimealarm.data.AlarmDataController
+import com.sieunguoimay.screentimealarm.data.AlarmViewData
 
 class ForegroundServiceController(
     private val context: Context,
@@ -59,10 +61,19 @@ class ForegroundServiceController(
 
         if (connectionStatus == ConnectionStatus.ConnectedFirstTime) {
             val dataFromActivity = dataController.alarmViewData?.alarmData
-            if (dataFromActivity != null) {
-                backgroundService?.alarmController?.setAlarmData(dataFromActivity)
-                backgroundService?.alarmController?.startAlarm()
-                dataController.alarmViewData?.alarmController = backgroundService?.alarmController
+            if (dataFromActivity != null && backgroundService != null) {
+                backgroundService!!.alarmController.setAlarmData(dataFromActivity)
+                backgroundService!!.alarmController.startAlarm()
+                dataController.alarmViewData?.alarmController = backgroundService!!.alarmController
+                val time =
+                    if (dataController.alarmViewData != null)
+                        AlarmViewData.formatTime(dataController.alarmViewData!!.alarmData.alarmConfigData.maxScreenTimeMilliSeconds)
+                    else "null"
+                Toast.makeText(
+                    context,
+                    String.format(backgroundService!!.getString(R.string.begin_toast), time),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         } else if (connectionStatus == ConnectionStatus.ConnectedSecondTimeOn) {
             val dataFromService = backgroundService?.alarmController?.alarmData

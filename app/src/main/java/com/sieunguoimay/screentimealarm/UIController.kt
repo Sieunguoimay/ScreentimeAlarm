@@ -23,6 +23,7 @@ class UIController(
     private val startOverButton: Button get() = binding.buttonStartOver
     private val progressLayout: LinearLayout get() = binding.layoutScreenTimeProgress
     private val statusText: TextView get() = binding.textLine2Value
+    private val bottomGuideText: TextView get() = binding.textBottomGuide
     private val screenTimeMaxConfigText: TextView get() = binding.textLine1Value
     private val progressBar: ProgressBar get() = binding.progressBar
     private val currentScreenTimeText: TextView get() = binding.textCurrentScreenTime
@@ -51,12 +52,14 @@ class UIController(
         serviceController.addHandler(serviceActiveHandler)
 
         progressRunningUI = ProgressRunningUI(
+            context,
             startOverButton,
             progressBar,
             maxScreenTimeText,
             currentScreenTimeText
         )
         maxScreenTimeConfigUI = MaxScreenTimeConfigUI(
+            context,
             binding.layoutMaxScreenTimeConfig,
             binding.textLine1Value,
             binding.imageEditIcon,
@@ -116,6 +119,7 @@ class UIController(
         toggleVisibility(serviceActive)
         mainButton.text = context.getString(key)
         statusText.text = context.getString(statusKey)
+        bottomGuideText.visibility = if(serviceActive) View.VISIBLE else View.GONE
     }
 
     private fun toggleVisibility(visible: Boolean) {
