@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@drawable/ic_launcher_background" />
-    <foreground android:drawable="@drawable/ic_launcher_foreground" />
-    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+
+    <foreground>
+        <inset
+            android:insetBottom="250dp"
+            android:insetLeft="250dp"
+            android:insetRight="250dp"
+            android:insetTop="250dp">
+            <layer-list>
+                <item
+                    android:left="20dp"
+                    >
+                    <bitmap
+                        android:src="@drawable/ico_eye_drop"
+                        android:tint="@color/text_color_brown">
+                    </bitmap>
+                </item>
+                <item
+                    android:top="5dp"
+                    android:left="20dp"
+                    android:width="470dp"
+                    android:height="470dp"
+                    >
+                    <bitmap
+                        android:src="@drawable/ico_eye_drop"
+                        android:tint="@color/text_color_brown_light">
+                    </bitmap>
+                </item>
+            </layer-list>
+        </inset>
+
+    </foreground>
 </adaptive-icon>

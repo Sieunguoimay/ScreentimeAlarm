@@ -1,7 +1,10 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <shape android:shape="rectangle"
-            android:tint="@color/icon_color_brown"
-            />
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="135"
+                android:endColor="@color/ic_launcher_bg_color_1"
+                android:startColor="@color/ic_launcher_bg_color_2" />
+        </shape>
     </item>
 </layer-list>

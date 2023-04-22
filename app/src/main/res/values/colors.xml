@@ -24,4 +24,6 @@
     <color name="transparent">#00000000</color>
     <color name="progress">#cae4a9</color>
     <color name="progress_red">#FF6666</color>
+    <color name="ic_launcher_bg_color_1">#D1AA7C</color>
+    <color name="ic_launcher_bg_color_2">#c0925c</color>
 </resources>
