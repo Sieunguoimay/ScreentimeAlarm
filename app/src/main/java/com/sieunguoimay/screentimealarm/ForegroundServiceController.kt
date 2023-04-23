@@ -4,24 +4,24 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.ServiceConnection
 import android.os.IBinder
-import android.util.Log
-import android.widget.Toast
 import com.sieunguoimay.screentimealarm.data.AlarmDataController
-import com.sieunguoimay.screentimealarm.data.AlarmViewData
 
 class ForegroundServiceController(
     private val context: Context,
     private val dataController: AlarmDataController
-) {
+) : ProgressRunningUI.StartOverButtonClickHandler {
     private var backgroundService: ForegroundService? = null
-    private var lockButtonFlag: Boolean = false
     private var activeHandler: ArrayList<ServiceActiveHandler> = ArrayList()
     var isActive: Boolean = false
         private set
     private var bindingOnStart: Boolean = false
 
     fun tryBindingToTheService() {
-        setConnectionStatus(ConnectionStatus.NotConnectedOnStart)
+//        setConnectionStatus(ConnectionStatus.NotConnectedOnStart)
+        isActive = false
+        invokeActiveHandlers()
+
+//        loadSavedAlarmData()
         ForegroundService.bindService(context, connection)
     }
 
@@ -29,14 +29,12 @@ class ForegroundServiceController(
     }
 
     fun tryToggleService() {
-        if (!lockButtonFlag) {
-            lockTheButton()
-            if (backgroundService == null) {
-                bindingOnStart = true
-                ForegroundService.startService(context, connection)
-            } else {
-                ForegroundService.stopService(context, connection)
-            }
+        if (backgroundService == null) {
+            bindingOnStart = true
+            dataController.savePersistentData(context)
+            ForegroundService.startService(context, connection)
+        } else {
+            ForegroundService.stopService(context, connection)
         }
     }
 
@@ -44,81 +42,108 @@ class ForegroundServiceController(
         activeHandler.add(handler)
     }
 
-    private fun lockTheButton() {
-        lockButtonFlag = true
-    }
+//    private fun setConnectionStatus(connectionStatus: ConnectionStatus) {
+//        Log.d("", "$connectionStatus")
+//        isActive =
+//            connectionStatus == ConnectionStatus.ConnectedSecondTimeOn || connectionStatus == ConnectionStatus.ConnectedFirstTime
 
-    private fun unlockTheButton() {
-        lockButtonFlag = false
-    }
+//        if (connectionStatus == ConnectionStatus.ConnectedFirstTime) {
+////            val dataFromActivity = dataController.alarmViewData?.alarmData
+//            val dataFromPersistent = dataController.loadDataFromPersistent(context)
+////            dataController.setAlarmData(dataFromPersistent)
+//
+//            if (backgroundService != null) {
+//                backgroundService!!.alarmController.setAlarmData(dataFromPersistent)
+//                backgroundService!!.alarmController.startAlarm()
+//                dataController.alarmViewData?.alarmController = backgroundService!!.alarmController
+//                toastFirstTimeEnableService()
+//            }
+//        } else
+//        if (connectionStatus == ConnectionStatus.ConnectedSecondTimeOn) {
+//            val dataFromService = backgroundService?.alarmController?.alarmData
+//            if (dataFromService != null) {
+//                dataController.setAlarmData(dataFromService)
+//                dataController.alarmViewData?.alarmController = backgroundService?.alarmController
+//            }
+//        } else
+//        if (connectionStatus == ConnectionStatus.NotConnectedOnStart) {
+//            val dataFromPersistent = AlarmDataController.loadDataFromPersistent(context)
+//            dataController.setAlarmData(dataFromPersistent)
+//        } else if (connectionStatus == ConnectionStatus.Disconnected) {
+//
+//        }
 
-    private fun setConnectionStatus(connectionStatus: ConnectionStatus) {
-        Log.d("", "$connectionStatus")
-        isActive =
-            connectionStatus == ConnectionStatus.ConnectedSecondTimeOn || connectionStatus == ConnectionStatus.ConnectedFirstTime
+//        dataController.alarmViewData?.alarmData?.alarmRuntimeData?.setAlarmActiveStatus(isActive)
+//
+//        for (l in activeHandler) {
+//            l.onConnectionStatusChanged(this@ForegroundServiceController)
+//        }
+//    }
 
-        if (connectionStatus == ConnectionStatus.ConnectedFirstTime) {
-            val dataFromActivity = dataController.alarmViewData?.alarmData
-            if (dataFromActivity != null && backgroundService != null) {
-                backgroundService!!.alarmController.setAlarmData(dataFromActivity)
-                backgroundService!!.alarmController.startAlarm()
-                dataController.alarmViewData?.alarmController = backgroundService!!.alarmController
-                val time =
-                    if (dataController.alarmViewData != null)
-                        AlarmViewData.formatTime(dataController.alarmViewData!!.alarmData.alarmConfigData.maxScreenTimeMilliSeconds)
-                    else "null"
-                Toast.makeText(
-                    context,
-                    String.format(backgroundService!!.getString(R.string.begin_toast), time),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        } else if (connectionStatus == ConnectionStatus.ConnectedSecondTimeOn) {
-            val dataFromService = backgroundService?.alarmController?.alarmData
-            if (dataFromService != null) {
-                dataController.setAlarmData(dataFromService)
-                dataController.alarmViewData?.alarmController = backgroundService?.alarmController
-            }
-        } else if (connectionStatus == ConnectionStatus.NotConnectedOnStart) {
-            val dataFromPersistent = dataController.loadDataFromPersistent(context)
-            dataController.setAlarmData(dataFromPersistent)
-        } else if (connectionStatus == ConnectionStatus.Disconnected) {
-
-        }
-
-        dataController.alarmViewData?.alarmData?.alarmRuntimeData?.setAlarmActiveStatus(isActive)
-
+    //    private fun onConnectedForFirstTime(){
+//        //            val dataFromActivity = dataController.alarmViewData?.alarmData
+//        val dataFromPersistent = AlarmDataController.loadDataFromPersistent(context)
+////            dataController.setAlarmData(dataFromPersistent)
+//
+//        if (backgroundService != null) {
+//            backgroundService!!.alarmController.setAlarmData(dataFromPersistent)
+//            backgroundService!!.alarmController.startAlarm()
+//            toastFirstTimeEnableService(dataFromPersistent)
+//        }
+//    }
+//    private fun toastFirstTimeEnableService(dataFromPersistent: AlarmData?){
+//        val time =
+//            if (dataFromPersistent != null)
+//                AlarmViewData.formatTime(dataFromPersistent.alarmConfigData.maxScreenTimeMilliSeconds)
+//            else "null"
+//        Toast.makeText(
+//            context,
+//            String.format(backgroundService!!.getString(R.string.begin_toast), time),
+//            Toast.LENGTH_LONG
+//        ).show()
+//    }
+//
+    private fun invokeActiveHandlers() {
         for (l in activeHandler) {
-            l.onConnectionStatusChanged(this@ForegroundServiceController)
+            l.onConnectionStatusChanged(this)
         }
     }
-
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            isActive = true
+
             backgroundService = (service as ForegroundService.LocalBinder).getService()
             backgroundService?.serviceDestroyHandler = onServiceDestroyHandler
 
             if (bindingOnStart) {
-                setConnectionStatus(ConnectionStatus.ConnectedFirstTime)
+//                setConnectionStatus(ConnectionStatus.ConnectedFirstTime)
+                backgroundService?.setupAlarm(dataController.alarmViewData!!.alarmData)
+                dataController.alarmViewData?.alarmController = backgroundService?.alarmController
                 bindingOnStart = false
             } else {
-                setConnectionStatus(ConnectionStatus.ConnectedSecondTimeOn)
+//                setConnectionStatus(ConnectionStatus.ConnectedSecondTimeOn)
+                takeAlarmDataFromRunningService()
             }
-
-            // Do something with the service reference
-            unlockTheButton()
+            invokeActiveHandlers()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
         }
     }
-
+    private fun takeAlarmDataFromRunningService() {
+        val dataFromService = backgroundService?.alarmController?.alarmData
+        if (dataFromService != null) {
+            dataController.setAlarmData(dataFromService)
+            dataController.alarmViewData?.alarmController = backgroundService?.alarmController
+        }
+    }
     private val onServiceDestroyHandler = object : ForegroundService.ServiceDestroyHandler {
         override fun onServiceDestroy(service: ForegroundService) {
             backgroundService = null
-            unlockTheButton()
-            setConnectionStatus(ConnectionStatus.Disconnected)
+//            setConnectionStatus(ConnectionStatus.Disconnected)
+            isActive = false
+            invokeActiveHandlers()
         }
     }
 
@@ -126,10 +151,14 @@ class ForegroundServiceController(
         fun onConnectionStatusChanged(sender: ForegroundServiceController)
     }
 
-    enum class ConnectionStatus {
-        ConnectedFirstTime,
-        ConnectedSecondTimeOn,
-        NotConnectedOnStart,
-        Disconnected
+//    enum class ConnectionStatus {
+        //        ConnectedFirstTime,
+//        ConnectedSecondTimeOn,
+//        NotConnectedOnStart,
+//        Disconnected
+//    }
+
+    override fun onStartOverClicked() {
+        backgroundService?.alarmController?.startOver()
     }
 }

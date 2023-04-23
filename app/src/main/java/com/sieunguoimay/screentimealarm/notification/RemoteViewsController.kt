@@ -1,8 +1,6 @@
 package com.sieunguoimay.screentimealarm.notification
 
 import android.app.Notification
-import android.app.admin.DevicePolicyManager
-import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
@@ -18,23 +16,44 @@ class RemoteViewsController(
     private val progressBuilder: NotificationCompat.Builder,
     private val resourceProvider: ResourceProvider,
     private val alarmController: AlarmController,
-
+    private val extendHandler: ExtendHandler
 ) {
     var notification: Notification? = null
     private var alarmViewData: AlarmViewData? = null
+
+    var extending: Boolean = false
+        private set
     fun startOver() {
         alarmController.startOver()
-        Log.d("","startOver")
+//        Log.d("","startOver")
     }
 
-    fun lockScreen() {
-        Log.d("","lockScreen")
+    fun extends() {
+        extending = true
+        invokeHandlers(extending)
+    }
+    fun collapse() {
+        extending = false
+        invokeHandlers(extending)
+    }
+
+    private fun invokeHandlers(extending: Boolean) {
+        if (extending) {
+            extendHandler.onExtend()
+        } else {
+            extendHandler.onMinimize()
+        }
+    }
+
+    interface ExtendHandler {
+        fun onExtend()
+        fun onMinimize()
     }
 
     fun updateProgress() {
         updateBigView(false)
         notification = progressBuilder
-            .setCustomContentView(contentSmallView)
+            .setCustomContentView(contentBigView)
             .setCustomBigContentView(contentBigView)
             .build()
     }
@@ -43,11 +62,12 @@ class RemoteViewsController(
         updateBigView(false)
         notification = alarmBuilder
             .setCustomContentView(contentSmallView)
-            .setCustomBigContentView(contentBigView)
+            .setCustomBigContentView(contentSmallView)
             .build()
     }
 
     fun createNotificationForDropDown() {
+        extending = true
         updateBigView(true)
         notification = alarmBuilder
             .setCustomContentView(contentBigView)
@@ -63,9 +83,12 @@ class RemoteViewsController(
             )
             contentBigView.setProgressBar(R.id.progress_bar, 100, 100, false)
             contentBigView.setProgressBar(R.id.progress_bar_red, 100, 100, false)
+            contentBigView.setViewVisibility(R.id.button_collapse,View.GONE)
             setProgressBarToRed(true)
             return
         }
+        contentBigView.setViewVisibility(R.id.button_collapse,View.VISIBLE)
+
         if (alarmController.alarmData == null) return
 
         if (alarmViewData == null) {

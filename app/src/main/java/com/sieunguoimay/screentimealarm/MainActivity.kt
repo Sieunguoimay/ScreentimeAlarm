@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.sieunguoimay.screentimealarm.data.AlarmDataController
+import com.sieunguoimay.screentimealarm.data.AlarmDataHandler
 import com.sieunguoimay.screentimealarm.databinding.ActivityMainBinding
 
 
@@ -25,14 +26,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         dataController = AlarmDataController()
-        serviceController = ForegroundServiceController(applicationContext, dataController)
-        uiController = UIController(this, binding, dataController, serviceController)
+        serviceController = ForegroundServiceController(this, dataController)
+        uiController =
+            UIController(this, binding, dataController, serviceController, serviceController)
         uiController.setupEvents()
+        dataController.alarmDataHandlers.add(alarmDataHandler)
         tryRequestPermissions()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        dataController.alarmDataHandlers.remove(alarmDataHandler)
         serviceController.onActivityDestroy()
         dataController.savePersistentData(this)
     }
@@ -40,6 +44,11 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         dataController.savePersistentData(this)
+    }
+
+    private val alarmDataHandler = object : AlarmDataHandler {
+        override fun onDataReady(sender: AlarmDataController) {
+        }
     }
 
     private fun tryRequestPermissions() {
@@ -115,7 +124,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onPermissionGranted() {
+        loadSavedAlarmData()
         serviceController.tryBindingToTheService()
+    }
+
+    private fun loadSavedAlarmData() {
+        val dataFromPersistent = AlarmDataController.loadDataFromPersistent(this)
+        dataController.setAlarmData(dataFromPersistent)
     }
 
     private fun onPermissionDenied() {

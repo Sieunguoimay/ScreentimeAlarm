@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.os.SystemClock
+import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.sieunguoimay.screentimealarm.AlarmController
@@ -17,30 +18,35 @@ import com.sieunguoimay.screentimealarm.R
 class NotificationController(
     private val service: Service,
     private val alarmController: AlarmController,
-) : AlarmController.AlarmStartOverHandler {
+) : AlarmController.AlarmStartOverHandler, RemoteViewsController.ExtendHandler {
 
     private val alarmChannelId = "Alarm Channel ID"
     private val progressChannelId = "Progress Channel ID"
     private val notificationId: Int = 20
     private var notificationManager: NotificationManager? = null
     private var threadRunning: Boolean = false
+    private var thread: Thread? = null
 
     fun show() {
         createNotification()
         remoteViewController?.createNotificationForFirstTime()
         service.startForeground(notificationId, remoteViewController?.notification)
         alarmController.alarmStartOverHandlers.add(this)
-        startThread()
+
+//        startThread()
     }
 
-    fun dropDown() {
+    fun dropDownHeadTop() {
         stopThread()
         remoteViewController?.createNotificationForDropDown()
         notificationManager?.notify(notificationId, remoteViewController?.notification)
     }
 
     override fun onAlarmStartOver(sender: AlarmController) {
-        startThread()
+        if (remoteViewController != null && remoteViewController!!.extending) {
+            stopThread()
+            startThread()
+        }
     }
 
     fun dismiss() {
@@ -51,17 +57,36 @@ class NotificationController(
 
     private fun startThread() {
         threadRunning = true
-        Thread {
+        thread = Thread {
             while (threadRunning) {
                 remoteViewController?.updateProgress()
                 notificationManager?.notify(notificationId, remoteViewController?.notification)
-                SystemClock.sleep(1000)
+                try {
+                    SystemClock.sleep(1000)
+                } catch (e: InterruptedException) {
+                      // We've been interrupted: no more messages.
+                    break
+                }
             }
-        }.start()
+        }
+        thread!!.start()
     }
 
     private fun stopThread() {
         threadRunning = false
+        thread?.interrupt()
+    }
+
+    override fun onExtend() {
+        startThread()
+        remoteViewController?.updateProgress()
+        notificationManager?.notify(notificationId, remoteViewController?.notification)
+    }
+
+    override fun onMinimize() {
+        stopThread()
+        remoteViewController?.createNotificationForFirstTime()
+        service.startForeground(notificationId, remoteViewController?.notification)
     }
 
     private fun createNotification() {
@@ -75,7 +100,7 @@ class NotificationController(
             service.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         remoteViewController = RemoteViewsController(
             contentBigView, contentSmallView,
-            alarmBuilder, progressBuilder, stringProvider, alarmController
+            alarmBuilder, progressBuilder, stringProvider, alarmController, this
 //                Icon.createWithResource(service, R.drawable.ico_drop_down),
 //                Icon.createWithResource(service, R.drawable.ico_drop_up)
         )
@@ -150,11 +175,20 @@ class NotificationController(
             R.id.button_start_over,
             createRemoteViewPendingIntent(R.id.button_start_over, 0)
         )
+        contentView.setOnClickPendingIntent(
+            R.id.button_collapse,
+            createRemoteViewPendingIntent(R.id.button_collapse, 2)
+        )
         return contentView
     }
 
     private fun createSmallNotificationView(): RemoteViews {
-        return RemoteViews(service.packageName, R.layout.layout_notification_small)
+        val view = RemoteViews(service.packageName, R.layout.layout_notification_small)
+        view.setOnClickPendingIntent(
+            R.id.button_extends,
+            createRemoteViewPendingIntent(R.id.button_extends, 1)
+        )
+        return view
     }
 
     private fun createContentPendingIntent(): PendingIntent {
@@ -187,7 +221,12 @@ class NotificationController(
             val viewId = intent.getIntExtra("view_id", -1)
             if (viewId == R.id.button_start_over) {
                 remoteViewController?.startOver()
+            } else if (viewId == R.id.button_extends) {
+                remoteViewController?.extends()
+            } else if (viewId == R.id.button_collapse) {
+                remoteViewController?.collapse()
             }
         }
     }
+
 }

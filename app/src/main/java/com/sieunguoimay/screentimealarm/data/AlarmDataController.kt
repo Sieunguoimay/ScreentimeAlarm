@@ -4,7 +4,7 @@ import android.content.Context
 import com.sieunguoimay.screentimealarm.R
 
 class AlarmDataController {
-    private val alarmDataHandlers: ArrayList<AlarmDataHandler> = ArrayList()
+    val alarmDataHandlers: ArrayList<AlarmDataHandler> = ArrayList()
     var alarmViewData: AlarmViewData? = null
         private set
 
@@ -13,16 +13,20 @@ class AlarmDataController {
         invokeOnDataReady()
     }
 
-    fun loadDataFromPersistent(context: Context): AlarmData {
-        val sharedPref = context.getSharedPreferences(
-            context.getString(R.string.common_shared_preferences),0
-        )
+    companion object {
+        fun loadDataFromPersistent(context: Context): AlarmData {
+            val sharedPref = context.getSharedPreferences(
+                context.getString(R.string.common_shared_preferences), 0
+            )
 
-        val maxScreenTime = sharedPref.getInt(context.getString(R.string.save_max_screen_time), 10)
-        val alarmConfigData = AlarmConfigData()
+            val maxScreenTime =
+                sharedPref.getInt(context.getString(R.string.save_max_screen_time), 10)
+            val alarmConfigData = AlarmConfigData()
 
-        alarmConfigData.setMaxScreenTime(maxScreenTime)
-        return AlarmData(alarmConfigData, AlarmRuntimeData())
+            alarmConfigData.setMaxScreenTime(maxScreenTime)
+            return AlarmData(alarmConfigData, AlarmRuntimeData())
+        }
+
     }
 
     fun savePersistentData(context: Context) {

@@ -1,13 +1,16 @@
 package com.sieunguoimay.screentimealarm
 
 import android.app.Service
-import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.os.*
+import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.sieunguoimay.screentimealarm.data.AlarmData
+import com.sieunguoimay.screentimealarm.data.AlarmDataController
+import com.sieunguoimay.screentimealarm.data.AlarmViewData
 import com.sieunguoimay.screentimealarm.notification.NotificationController
 
 
@@ -57,6 +60,25 @@ class ForegroundService : Service() {
         stopNoise()
     }
 
+    fun setupAlarm(dataFromPersistent: AlarmData?) {
+//        val dataFromPersistent = AlarmDataController.loadDataFromPersistent(this)
+        alarmController.setAlarmData(dataFromPersistent)
+        alarmController.startAlarm()
+        toastFirstTimeEnableService(dataFromPersistent)
+    }
+
+    private fun toastFirstTimeEnableService(dataFromPersistent: AlarmData?) {
+        val time =
+            if (dataFromPersistent != null)
+                AlarmViewData.formatTime(dataFromPersistent.alarmConfigData.maxScreenTimeMilliSeconds)
+            else "null"
+        Toast.makeText(
+            this,
+            String.format(getString(R.string.begin_toast), time),
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
     private fun startBackgroundTask() {
         // Register the BroadcastReceiver to receive the screen state intents
         val intentFilter = IntentFilter().apply {
@@ -69,7 +91,7 @@ class ForegroundService : Service() {
 
     private val alarmFireHandler = object : AlarmController.AlarmFireHandler {
         override fun onAlarmFire(sender: AlarmController) {
-            notificationController.dropDown()
+            notificationController.dropDownHeadTop()
             makeNoise()
         }
     }

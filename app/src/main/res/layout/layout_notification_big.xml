@@ -86,8 +86,9 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
+            android:layout_marginHorizontal="5dp"
             android:layout_toEndOf="@id/layout_start_over"
+            android:layout_toStartOf="@+id/button_collapse"
             android:layout_marginTop="5dp"
             >
 
@@ -132,7 +133,22 @@
                 android:theme="@style/NotificationTextStyle" />
 
         </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/button_collapse"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:background="@color/gray"
+            android:paddingHorizontal="5dp"
+            >
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ico_three_dots"
+                android:theme="@style/NotificationImageStyle"
+                />
 
+        </RelativeLayout>
 
     </RelativeLayout>
 

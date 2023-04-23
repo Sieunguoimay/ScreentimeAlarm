@@ -16,7 +16,8 @@ class UIController(
     private val context: Activity,
     private var binding: ActivityMainBinding,
     private val dataController: AlarmDataController,
-    private val serviceController: ForegroundServiceController
+    private val serviceController: ForegroundServiceController,
+    private val startOverButtonClickHandler: ProgressRunningUI.StartOverButtonClickHandler
 ) {
     private val mainButton: Button get() = binding.mainButton
     private val numberPicker: NumberPicker get() = binding.numberPicker
@@ -56,7 +57,8 @@ class UIController(
             startOverButton,
             progressBar,
             maxScreenTimeText,
-            currentScreenTimeText
+            currentScreenTimeText,
+            startOverButtonClickHandler
         )
         maxScreenTimeConfigUI = MaxScreenTimeConfigUI(
             context,
@@ -91,6 +93,9 @@ class UIController(
     private val serviceActiveHandler = object : ForegroundServiceController.ServiceActiveHandler {
         override fun onConnectionStatusChanged(sender: ForegroundServiceController) {
             progressRunningUI?.mainButtonLock = false
+
+            dataController.alarmViewData?.alarmData?.alarmRuntimeData?.setAlarmActiveStatus(serviceController.isActive)
+
             if (serviceController.isActive) {
                 if (dataController.alarmViewData != null) {
                     progressRunningUI?.setup(dataController.alarmViewData!!)

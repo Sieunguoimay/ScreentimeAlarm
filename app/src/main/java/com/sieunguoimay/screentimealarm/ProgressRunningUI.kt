@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.ColorFilter
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -19,6 +20,7 @@ class ProgressRunningUI(
     private val progressBar: ProgressBar,
     private val maxScreenTimeText: TextView,
     private val currentScreenTimeText: TextView,
+    private val startOverClickHandler:StartOverButtonClickHandler
 ) {
     var mainButtonLock: Boolean = false
     private var timer: Timer = Timer()
@@ -29,7 +31,7 @@ class ProgressRunningUI(
         this.alarmViewData = alarmViewData
         startOverButton.setOnClickListener {
             if (!mainButtonLock) {
-                alarmViewData.alarmController?.startOver()
+                startOverClickHandler.onStartOverClicked()
             }
         }
         syncViewWithData()
@@ -81,6 +83,7 @@ class ProgressRunningUI(
         val redColor = context.getColor(R.color.progress_red)
         progressBar.progressTintList =
             ColorStateList.valueOf(calculateProgressTint(greenColor, redColor, progress))
+        Log.d("","progress ${alarmViewData!!.alarmData.alarmRuntimeData.alarmFireTime} $total")
     }
 
     companion object {
@@ -100,5 +103,8 @@ class ProgressRunningUI(
             if (progress >= max) return 1f
             return (progress - min) / (max - min)
         }
+    }
+    interface StartOverButtonClickHandler{
+        fun onStartOverClicked()
     }
 }
