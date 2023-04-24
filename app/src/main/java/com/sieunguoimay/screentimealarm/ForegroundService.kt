@@ -5,7 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
-import android.os.*
+import android.os.Binder
+import android.os.Build
+import android.os.CombinedVibration
+import android.os.IBinder
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.sieunguoimay.screentimealarm.data.AlarmData
@@ -41,6 +47,7 @@ class ForegroundService : Service() {
         // Check if the service is active
         if (!isActive) {
             isActive = true
+            setupAlarm()
             startBackgroundTask()
         }
 
@@ -60,8 +67,8 @@ class ForegroundService : Service() {
         stopNoise()
     }
 
-    fun setupAlarm(dataFromPersistent: AlarmData?) {
-//        val dataFromPersistent = AlarmDataController.loadDataFromPersistent(this)
+    private fun setupAlarm() {
+        val dataFromPersistent = AlarmDataController.loadDataFromPersistent(this)
         alarmController.setAlarmData(dataFromPersistent)
         alarmController.startAlarm()
         toastFirstTimeEnableService(dataFromPersistent)
@@ -166,14 +173,13 @@ class ForegroundService : Service() {
 
     companion object {
 
-        fun startService(context: Context, connection: ServiceConnection) {
+        fun startService(context: Context) {
             val intent = Intent(context, ForegroundService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 ContextCompat.startForegroundService(context, intent)
             } else {
                 context.startService(intent)
             }
-            context.bindService(intent, connection, 0)
         }
 
         fun bindService(context: Context, connection: ServiceConnection): Boolean {

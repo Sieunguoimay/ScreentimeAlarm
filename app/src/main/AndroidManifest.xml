@@ -36,6 +36,7 @@
         </service>
         <receiver
             android:name=".notification.NotificationController$RemoteViewBroadcastReceiver"
+            android:enabled="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="RemoteViewsClicked" />

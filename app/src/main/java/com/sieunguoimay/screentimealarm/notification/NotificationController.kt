@@ -64,7 +64,7 @@ class NotificationController(
                 try {
                     SystemClock.sleep(1000)
                 } catch (e: InterruptedException) {
-                      // We've been interrupted: no more messages.
+                    // We've been interrupted: no more messages.
                     break
                 }
             }
@@ -85,13 +85,14 @@ class NotificationController(
 
     override fun onMinimize() {
         stopThread()
-        remoteViewController?.createNotificationForFirstTime()
+        remoteViewController?.createLowPriorityNotification()
         service.startForeground(notificationId, remoteViewController?.notification)
     }
 
     private fun createNotification() {
         setupNotificationChannel()
         val progressBuilder = createProgressNotificationBuilder()
+        val lowPriorityBuilder = createLowPriorityNotificationBuilder()
         val alarmBuilder = createAlarmNotificationBuilder()
         val contentBigView = createBigNotificationView();
         val contentSmallView = createSmallNotificationView()
@@ -99,10 +100,8 @@ class NotificationController(
         notificationManager =
             service.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         remoteViewController = RemoteViewsController(
-            contentBigView, contentSmallView,
+            contentBigView, contentSmallView, lowPriorityBuilder,
             alarmBuilder, progressBuilder, stringProvider, alarmController, this
-//                Icon.createWithResource(service, R.drawable.ico_drop_down),
-//                Icon.createWithResource(service, R.drawable.ico_drop_up)
         )
     }
 
@@ -156,13 +155,26 @@ class NotificationController(
             .setShowWhen(false)
     }
 
+    private fun createLowPriorityNotificationBuilder(): NotificationCompat.Builder {
+        val pendingIntent = createContentPendingIntent()
+        return (if (Build.VERSION.SDK_INT >= VERSION_CODES.O)
+            NotificationCompat.Builder(service, progressChannelId)
+        else NotificationCompat.Builder(service))
+            .setContentIntent(pendingIntent)
+            .setFullScreenIntent(pendingIntent, true)
+            .setSmallIcon(R.drawable.ico_eye_drop)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
+            .setPriority(NotificationCompat.PRIORITY_LOW)// for under android 26 compatibility
+            .setShowWhen(false)
+    }
+
     private fun createProgressNotificationBuilder(): NotificationCompat.Builder {
         val pendingIntent = createContentPendingIntent()
         return (if (Build.VERSION.SDK_INT >= VERSION_CODES.O)
             NotificationCompat.Builder(service, progressChannelId)
         else NotificationCompat.Builder(service))
             .setContentIntent(pendingIntent)
-            .setFullScreenIntent(pendingIntent, false)
+            .setFullScreenIntent(pendingIntent, true)
             .setSmallIcon(R.drawable.ico_eye_drop)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setPriority(NotificationCompat.PRIORITY_LOW)

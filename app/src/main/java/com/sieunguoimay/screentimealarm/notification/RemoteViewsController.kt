@@ -12,6 +12,7 @@ import com.sieunguoimay.screentimealarm.data.AlarmViewData
 class RemoteViewsController(
     private val contentBigView: RemoteViews,
     private val contentSmallView: RemoteViews,
+    private val lowPriorityBuilder: NotificationCompat.Builder,
     private val alarmBuilder: NotificationCompat.Builder,
     private val progressBuilder: NotificationCompat.Builder,
     private val resourceProvider: ResourceProvider,
@@ -54,15 +55,22 @@ class RemoteViewsController(
         updateBigView(false)
         notification = progressBuilder
             .setCustomContentView(contentBigView)
-            .setCustomBigContentView(contentBigView)
+//            .setCustomBigContentView(contentBigView)
             .build()
     }
 
     fun createNotificationForFirstTime() {
-        updateBigView(false)
+//        updateBigView(false)
         notification = alarmBuilder
             .setCustomContentView(contentSmallView)
-            .setCustomBigContentView(contentSmallView)
+//            .setCustomBigContentView(contentSmallView)
+            .build()
+    }
+    fun createLowPriorityNotification() {
+//        updateBigView(false)
+        notification = lowPriorityBuilder
+            .setCustomContentView(contentSmallView)
+//            .setCustomBigContentView(contentSmallView)
             .build()
     }
 
@@ -71,7 +79,7 @@ class RemoteViewsController(
         updateBigView(true)
         notification = alarmBuilder
             .setCustomContentView(contentBigView)
-            .setCustomBigContentView(contentBigView)
+//            .setCustomBigContentView(contentBigView)
             .build()
     }
 
