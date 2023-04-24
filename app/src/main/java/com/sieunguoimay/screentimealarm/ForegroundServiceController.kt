@@ -83,7 +83,7 @@ class ForegroundServiceController(
     }
 
     override fun onStartOverClicked() {
-        backgroundService?.alarmController?.startOver()
+        backgroundService?.alarmController?.startOver(backgroundService!!)
     }
 
     fun onActivityDestroy() {

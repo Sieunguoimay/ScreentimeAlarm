@@ -10,7 +10,7 @@ class ScreenStateReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         when (intent?.action) {
             Intent.ACTION_SCREEN_ON -> {
-                onScreenOn()
+                onScreenOn(context)
             }
             Intent.ACTION_SCREEN_OFF -> {
                 onScreenOff()
@@ -18,8 +18,8 @@ class ScreenStateReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun onScreenOn() {
-        alarmController?.startOver()
+    private fun onScreenOn(context: Context?) {
+        alarmController?.startOver(context!!)
     }
 
     private fun onScreenOff() {

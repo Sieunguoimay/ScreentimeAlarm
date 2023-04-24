@@ -1,10 +1,16 @@
 package com.sieunguoimay.screentimealarm
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.os.SystemClock
 import android.util.Log
 import com.sieunguoimay.screentimealarm.data.AlarmData
 import java.util.*
 
-class AlarmController {
+class AlarmController() {
 
     var alarmData: AlarmData? = null
         private set
@@ -17,11 +23,14 @@ class AlarmController {
     private val minutes: Int get() = alarmData?.alarmConfigData?.maxScreenTimeMinutes ?: 0
 
     private var timer = Timer()
+
+    private var alarmManager:AlarmManager? = null
+    private lateinit var alarmIntent:PendingIntent
     fun setAlarmData(alarmData: AlarmData?) {
         this.alarmData = alarmData
     }
 
-    fun startAlarm() {
+    fun startAlarm(context: Context) {
         if (alarmData == null) {
             Log.e("", "startAlarm $minutes - alarmData is empty")
             return
@@ -33,17 +42,21 @@ class AlarmController {
         Log.d("", "startAlarm $minutes")
         isRunning = true
         updateAlarmFireTime()
+//        startSystemAlarm(context)
     }
 
     fun stopAlarm() {
         isRunning = false
         timer.cancel()
+        stopSystemAlarm()
     }
 
-    fun startOver() {
+    fun startOver(context:Context) {
         isRunning = true
         timer.cancel()
         updateAlarmFireTime()
+//        stopSystemAlarm()
+//        startSystemAlarm(context)
         invokeStartOverHandlers()
     }
 
@@ -65,12 +78,17 @@ class AlarmController {
         timer.schedule(object : TimerTask() {
             override fun run() {
                 Log.d("", "firing alarm")
-                invokeFireHandler()
+                invokeFireHandlers()
             }
         }, delayMillis)
     }
 
-    private fun invokeFireHandler() {
+    private fun getTriggerTime(): Long {
+        val delayMillis = minutes.toLong() * 60 * 1000L
+        return System.currentTimeMillis() + delayMillis
+    }
+
+    private fun invokeFireHandlers() {
         for (h in alarmFireHandlers) {
             h.onAlarmFire(this)
         }
@@ -88,5 +106,32 @@ class AlarmController {
 
     interface AlarmStartOverHandler {
         fun onAlarmStartOver(sender: AlarmController)
+    }
+
+    private fun startSystemAlarm(context: Context) {
+        val intent = Intent(context, AlarmReceiver::class.java)
+        intent.action = "Alarms"
+
+        alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val delayMillis = minutes.toLong() * 60 * 1000L
+
+        alarmManager?.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + delayMillis, alarmIntent)
+    }
+
+    private fun stopSystemAlarm(){
+        alarmManager?.cancel(alarmIntent)
+    }
+
+    class AlarmReceiver : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            staticAlarmController?.invokeFireHandlers()
+        }
+
+        companion object {
+            var staticAlarmController: AlarmController? = null
+        }
     }
 }

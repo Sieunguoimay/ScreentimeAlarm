@@ -83,7 +83,7 @@ class ProgressRunningUI(
         val redColor = context.getColor(R.color.progress_red)
         progressBar.progressTintList =
             ColorStateList.valueOf(calculateProgressTint(greenColor, redColor, progress))
-        Log.d("","progress ${alarmViewData!!.alarmData.alarmRuntimeData.alarmFireTime} $total")
+//        Log.d("","progress ${alarmViewData!!.alarmData.alarmRuntimeData.alarmFireTime} $total")
     }
 
     companion object {

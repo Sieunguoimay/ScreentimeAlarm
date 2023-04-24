@@ -1,6 +1,7 @@
 package com.sieunguoimay.screentimealarm.notification
 
 import android.app.Notification
+import android.content.Context
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
@@ -24,8 +25,8 @@ class RemoteViewsController(
 
     var extending: Boolean = false
         private set
-    fun startOver() {
-        alarmController.startOver()
+    fun startOver(context: Context) {
+        alarmController.startOver(context)
 //        Log.d("","startOver")
     }
 
@@ -75,7 +76,7 @@ class RemoteViewsController(
     }
 
     fun createNotificationForDropDown() {
-        extending = true
+//        extending = true
         updateBigView(true)
         notification = alarmBuilder
             .setCustomContentView(contentBigView)

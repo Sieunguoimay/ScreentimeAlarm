@@ -70,7 +70,7 @@ class ForegroundService : Service() {
     private fun setupAlarm() {
         val dataFromPersistent = AlarmDataController.loadDataFromPersistent(this)
         alarmController.setAlarmData(dataFromPersistent)
-        alarmController.startAlarm()
+        alarmController.startAlarm(this)
         toastFirstTimeEnableService(dataFromPersistent)
     }
 

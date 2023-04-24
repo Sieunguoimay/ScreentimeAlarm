@@ -46,6 +46,9 @@ class NotificationController(
         if (remoteViewController != null && remoteViewController!!.extending) {
             stopThread()
             startThread()
+        }else{
+            remoteViewController?.createLowPriorityNotification()
+            service.startForeground(notificationId, remoteViewController?.notification)
         }
     }
 
@@ -232,7 +235,7 @@ class NotificationController(
         override fun onReceive(context: Context, intent: Intent) {
             val viewId = intent.getIntExtra("view_id", -1)
             if (viewId == R.id.button_start_over) {
-                remoteViewController?.startOver()
+                remoteViewController?.startOver(context)
             } else if (viewId == R.id.button_extends) {
                 remoteViewController?.extends()
             } else if (viewId == R.id.button_collapse) {
