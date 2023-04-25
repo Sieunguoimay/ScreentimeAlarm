@@ -8,9 +8,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.sieunguoimay.screentimealarm.databinding.ActivityMainBinding
 import com.snmstudio.screentimealarm.data.AlarmDataController
 import com.snmstudio.screentimealarm.data.AlarmDataHandler
+import com.snmstudio.screentimealarm.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {

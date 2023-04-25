@@ -8,7 +8,6 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.graphics.ColorUtils
-import com.sieunguoimay.screentimealarm.R
 import com.snmstudio.screentimealarm.data.AlarmViewData
 import java.util.*
 

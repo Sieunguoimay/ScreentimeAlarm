@@ -1,5 +1,6 @@
 package com.snmstudio.screentimealarm
 
+//noinspection SuspiciousImport
 import android.R
 import android.content.Context
 import android.content.res.TypedArray

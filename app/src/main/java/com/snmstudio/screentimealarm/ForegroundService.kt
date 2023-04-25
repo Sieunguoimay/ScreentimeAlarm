@@ -14,7 +14,6 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.sieunguoimay.screentimealarm.R
 import com.snmstudio.screentimealarm.data.AlarmData
 import com.snmstudio.screentimealarm.data.AlarmDataController
 import com.snmstudio.screentimealarm.data.AlarmViewData

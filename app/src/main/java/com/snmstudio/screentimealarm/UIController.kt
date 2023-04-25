@@ -8,10 +8,8 @@ import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.ProgressBar
 import android.widget.TextView
-import com.sieunguoimay.screentimealarm.R
-import com.sieunguoimay.screentimealarm.databinding.ActivityMainBinding
 import com.snmstudio.screentimealarm.data.*
-import java.util.*
+import com.snmstudio.screentimealarm.databinding.ActivityMainBinding
 
 class UIController(
     private val context: Activity,

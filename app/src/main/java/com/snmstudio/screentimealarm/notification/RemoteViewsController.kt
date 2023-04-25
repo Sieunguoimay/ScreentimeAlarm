@@ -5,8 +5,8 @@ import android.content.Context
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.sieunguoimay.screentimealarm.R
 import com.snmstudio.screentimealarm.AlarmController
+import com.snmstudio.screentimealarm.R
 import com.snmstudio.screentimealarm.data.AlarmViewData
 
 
