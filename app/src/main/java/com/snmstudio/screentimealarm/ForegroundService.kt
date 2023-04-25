@@ -1,4 +1,4 @@
-package com.sieunguoimay.screentimealarm
+package com.snmstudio.screentimealarm
 
 import android.app.Service
 import android.content.Context
@@ -14,10 +14,11 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.sieunguoimay.screentimealarm.data.AlarmData
-import com.sieunguoimay.screentimealarm.data.AlarmDataController
-import com.sieunguoimay.screentimealarm.data.AlarmViewData
-import com.sieunguoimay.screentimealarm.notification.NotificationController
+import com.sieunguoimay.screentimealarm.R
+import com.snmstudio.screentimealarm.data.AlarmData
+import com.snmstudio.screentimealarm.data.AlarmDataController
+import com.snmstudio.screentimealarm.data.AlarmViewData
+import com.snmstudio.screentimealarm.notification.NotificationController
 
 
 class ForegroundService : Service() {
@@ -38,6 +39,7 @@ class ForegroundService : Service() {
         alarmController.setup()
         alarmController.alarmFireHandlers.add(alarmFireHandler)
         alarmController.alarmStartOverHandlers.add(alarmStartOverHandler)
+        alarmController.alarmStopHandlers.add(alarmStopHandler)
         notificationController = NotificationController(this, alarmController)
         notificationController.show()
     }
@@ -60,6 +62,7 @@ class ForegroundService : Service() {
         unregisterReceiver(screenStateReceiver)
         alarmController.alarmFireHandlers.remove(alarmFireHandler)
         alarmController.alarmStartOverHandlers.remove(alarmStartOverHandler)
+        alarmController.alarmStopHandlers.remove(alarmStopHandler)
         alarmController.cleanup()
         screenStateReceiver.onUnregister()
         notificationController.dismiss()
@@ -70,7 +73,7 @@ class ForegroundService : Service() {
     private fun setupAlarm() {
         val dataFromPersistent = AlarmDataController.loadDataFromPersistent(this)
         alarmController.setAlarmData(dataFromPersistent)
-        alarmController.startAlarm(this)
+        alarmController.startAlarm()
         toastFirstTimeEnableService(dataFromPersistent)
     }
 
@@ -104,6 +107,11 @@ class ForegroundService : Service() {
     }
     private val alarmStartOverHandler = object : AlarmController.AlarmStartOverHandler {
         override fun onAlarmStartOver(sender: AlarmController) {
+            stopNoise()
+        }
+    }
+    private val alarmStopHandler = object : AlarmController.AlarmStopHandler {
+        override fun onAlarmStop(sender: AlarmController) {
             stopNoise()
         }
     }

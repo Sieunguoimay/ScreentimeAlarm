@@ -1,4 +1,4 @@
-package com.sieunguoimay.screentimealarm.data
+package com.snmstudio.screentimealarm.data
 
 import android.content.Context
 import com.sieunguoimay.screentimealarm.R

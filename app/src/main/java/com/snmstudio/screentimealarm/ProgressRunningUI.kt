@@ -1,17 +1,15 @@
-package com.sieunguoimay.screentimealarm
+package com.snmstudio.screentimealarm
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.ColorFilter
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.graphics.ColorUtils
-import com.sieunguoimay.screentimealarm.data.AlarmViewData
+import com.sieunguoimay.screentimealarm.R
+import com.snmstudio.screentimealarm.data.AlarmViewData
 import java.util.*
 
 class ProgressRunningUI(

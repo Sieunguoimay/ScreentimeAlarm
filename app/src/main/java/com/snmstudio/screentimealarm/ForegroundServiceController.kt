@@ -1,15 +1,10 @@
-package com.sieunguoimay.screentimealarm
+package com.snmstudio.screentimealarm
 
-import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.content.ServiceConnection
-import android.os.Build
 import android.os.IBinder
-import android.util.Log
-import android.widget.Toast
-import com.sieunguoimay.screentimealarm.data.AlarmDataController
+import com.snmstudio.screentimealarm.data.AlarmDataController
 
 
 class ForegroundServiceController(
@@ -83,7 +78,7 @@ class ForegroundServiceController(
     }
 
     override fun onStartOverClicked() {
-        backgroundService?.alarmController?.startOver(backgroundService!!)
+        backgroundService?.alarmController?.startOver()
     }
 
     fun onActivityDestroy() {

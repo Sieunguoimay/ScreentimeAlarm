@@ -1,4 +1,4 @@
-package com.sieunguoimay.screentimealarm
+package com.snmstudio.screentimealarm
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -8,9 +8,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.sieunguoimay.screentimealarm.data.AlarmDataController
-import com.sieunguoimay.screentimealarm.data.AlarmDataHandler
 import com.sieunguoimay.screentimealarm.databinding.ActivityMainBinding
+import com.snmstudio.screentimealarm.data.AlarmDataController
+import com.snmstudio.screentimealarm.data.AlarmDataHandler
 
 
 class MainActivity : AppCompatActivity() {

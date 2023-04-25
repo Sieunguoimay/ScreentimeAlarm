@@ -1,4 +1,4 @@
-package com.sieunguoimay.screentimealarm
+package com.snmstudio.screentimealarm
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -19,7 +19,7 @@ class ScreenStateReceiver : BroadcastReceiver() {
     }
 
     private fun onScreenOn(context: Context?) {
-        alarmController?.startOver(context!!)
+        alarmController?.startOver()
     }
 
     private fun onScreenOff() {

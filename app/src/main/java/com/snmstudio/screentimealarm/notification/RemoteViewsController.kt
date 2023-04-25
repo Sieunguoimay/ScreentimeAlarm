@@ -1,13 +1,13 @@
-package com.sieunguoimay.screentimealarm.notification
+package com.snmstudio.screentimealarm.notification
 
 import android.app.Notification
 import android.content.Context
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.sieunguoimay.screentimealarm.AlarmController
 import com.sieunguoimay.screentimealarm.R
-import com.sieunguoimay.screentimealarm.data.AlarmViewData
+import com.snmstudio.screentimealarm.AlarmController
+import com.snmstudio.screentimealarm.data.AlarmViewData
 
 
 class RemoteViewsController(
@@ -26,7 +26,7 @@ class RemoteViewsController(
     var extending: Boolean = false
         private set
     fun startOver(context: Context) {
-        alarmController.startOver(context)
+        alarmController.startOver()
 //        Log.d("","startOver")
     }
 

@@ -1,6 +1,6 @@
-package com.sieunguoimay.screentimealarm.data
+package com.snmstudio.screentimealarm.data
 
-import com.sieunguoimay.screentimealarm.AlarmController
+import com.snmstudio.screentimealarm.AlarmController
 import java.lang.Long.max
 import java.util.concurrent.TimeUnit
 
