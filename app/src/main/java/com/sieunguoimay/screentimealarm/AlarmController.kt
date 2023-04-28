@@ -1,4 +1,4 @@
-package com.snmstudio.screentimealarm
+package com.sieunguoimay.screentimealarm
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import android.util.Log
-import com.snmstudio.screentimealarm.data.AlarmData
+import com.sieunguoimay.screentimealarm.data.AlarmData
 import java.util.*
 
 class AlarmController() {

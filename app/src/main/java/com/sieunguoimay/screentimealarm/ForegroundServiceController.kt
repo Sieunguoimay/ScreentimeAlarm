@@ -1,10 +1,10 @@
-package com.snmstudio.screentimealarm
+package com.sieunguoimay.screentimealarm
 
 import android.content.ComponentName
 import android.content.Context
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.snmstudio.screentimealarm.data.AlarmDataController
+import com.sieunguoimay.screentimealarm.data.AlarmDataController
 
 
 class ForegroundServiceController(

@@ -1,4 +1,4 @@
-package com.snmstudio.screentimealarm
+package com.sieunguoimay.screentimealarm
 
 //noinspection SuspiciousImport
 import android.R
@@ -12,8 +12,8 @@ import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.TextView
 import androidx.core.graphics.ColorUtils
-import com.snmstudio.screentimealarm.data.AlarmConfigData
-import com.snmstudio.screentimealarm.data.AlarmViewData
+import com.sieunguoimay.screentimealarm.data.AlarmConfigData
+import com.sieunguoimay.screentimealarm.data.AlarmViewData
 
 
 class MaxScreenTimeConfigUI(

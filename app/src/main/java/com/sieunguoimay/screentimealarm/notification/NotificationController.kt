@@ -1,4 +1,4 @@
-package com.snmstudio.screentimealarm.notification
+package com.sieunguoimay.screentimealarm.notification
 
 import android.app.*
 import android.content.BroadcastReceiver
@@ -9,9 +9,9 @@ import android.os.Build.VERSION_CODES
 import android.os.SystemClock
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.snmstudio.screentimealarm.AlarmController
-import com.snmstudio.screentimealarm.MainActivity
-import com.snmstudio.screentimealarm.R
+import com.sieunguoimay.screentimealarm.AlarmController
+import com.sieunguoimay.screentimealarm.MainActivity
+import com.sieunguoimay.screentimealarm.R
 
 
 class NotificationController(

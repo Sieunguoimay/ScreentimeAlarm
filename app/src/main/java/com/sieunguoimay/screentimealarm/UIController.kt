@@ -1,4 +1,4 @@
-package com.snmstudio.screentimealarm
+package com.sieunguoimay.screentimealarm
 
 import android.app.Activity
 import android.util.Log
@@ -8,8 +8,8 @@ import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.ProgressBar
 import android.widget.TextView
-import com.snmstudio.screentimealarm.data.*
-import com.snmstudio.screentimealarm.databinding.ActivityMainBinding
+import com.sieunguoimay.screentimealarm.data.*
+import com.sieunguoimay.screentimealarm.databinding.ActivityMainBinding
 
 class UIController(
     private val context: Activity,

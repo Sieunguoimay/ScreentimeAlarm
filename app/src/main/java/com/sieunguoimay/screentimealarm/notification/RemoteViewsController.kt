@@ -1,13 +1,13 @@
-package com.snmstudio.screentimealarm.notification
+package com.sieunguoimay.screentimealarm.notification
 
 import android.app.Notification
 import android.content.Context
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.snmstudio.screentimealarm.AlarmController
-import com.snmstudio.screentimealarm.R
-import com.snmstudio.screentimealarm.data.AlarmViewData
+import com.sieunguoimay.screentimealarm.AlarmController
+import com.sieunguoimay.screentimealarm.R
+import com.sieunguoimay.screentimealarm.data.AlarmViewData
 
 
 class RemoteViewsController(

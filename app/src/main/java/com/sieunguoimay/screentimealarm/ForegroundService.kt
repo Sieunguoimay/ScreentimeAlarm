@@ -1,4 +1,4 @@
-package com.snmstudio.screentimealarm
+package com.sieunguoimay.screentimealarm
 
 import android.app.Service
 import android.content.Context
@@ -14,10 +14,10 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.snmstudio.screentimealarm.data.AlarmData
-import com.snmstudio.screentimealarm.data.AlarmDataController
-import com.snmstudio.screentimealarm.data.AlarmViewData
-import com.snmstudio.screentimealarm.notification.NotificationController
+import com.sieunguoimay.screentimealarm.data.AlarmData
+import com.sieunguoimay.screentimealarm.data.AlarmDataController
+import com.sieunguoimay.screentimealarm.data.AlarmViewData
+import com.sieunguoimay.screentimealarm.notification.NotificationController
 
 
 class ForegroundService : Service() {

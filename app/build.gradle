@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-    namespace 'com.snmstudio.screentimealarm'
+    namespace 'com.sieunguoimay.screentimealarm'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.snmstudio.screentimealarm"
+        applicationId "com.sieunguoimay.screentimealarm"
         minSdk 24
         targetSdk 33
-        versionCode 3
+        versionCode 5
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

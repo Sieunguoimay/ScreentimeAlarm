@@ -1,4 +1,4 @@
-package com.snmstudio.screentimealarm.data
+package com.sieunguoimay.screentimealarm.data
 
 import android.util.Log
 

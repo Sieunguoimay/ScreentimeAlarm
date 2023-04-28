@@ -1,7 +1,7 @@
-package com.snmstudio.screentimealarm.data
+package com.sieunguoimay.screentimealarm.data
 
 import android.content.Context
-import com.snmstudio.screentimealarm.R
+import com.sieunguoimay.screentimealarm.R
 
 class AlarmDataController {
     val alarmDataHandlers: ArrayList<AlarmDataHandler> = ArrayList()
